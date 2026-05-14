@@ -454,17 +454,13 @@ function SidebarConteudo({perfil, tab, setTab, onSair}) {
     :[{id:"tutoriais",label:"Tutoriais",emoji:"📚"}];
   return (
     <>
-      {/* TOPO SIDEBAR — logo grande + nome */}
-      <div style={{padding:"1.5rem 1.25rem 1rem",borderBottom:"1px solid rgba(255,255,255,0.12)",textAlign:"center"}}>
-        <img src="logo-complet.png" alt="UNIVERSO"
-          onError={e=>{e.target.style.display="none";}}
-          style={{width:"100%",maxWidth:180,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}
-        />
-        <div style={{marginTop:"0.6rem",fontSize:"0.72rem",color:"rgba(255,255,255,0.55)",letterSpacing:"0.04em"}}>
-          Portal de Tutoriais
-        </div>
+      <div style={{padding:"1.5rem 1.25rem 1.25rem",borderBottom:"1px solid rgba(255,255,255,0.12)",textAlign:"center"}}>
+        <img src="logo-escud.png" alt="UNIVERSO" onError={e=>e.target.style.display="none"}
+          style={{height:80,width:"auto",objectFit:"contain",display:"block",margin:"0 auto 0.75rem"}}/>
+        <div style={{fontWeight:800,fontSize:"1.05rem",color:"white",letterSpacing:"0.04em"}}>UNIVERSO</div>
+        <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.55)",marginTop:"0.15rem",letterSpacing:"0.06em"}}>Goiânia</div>
+        <div style={{marginTop:"0.6rem",display:"inline-block",background:"rgba(255,255,255,0.1)",borderRadius:"999px",padding:"0.2rem 0.8rem",fontSize:"0.68rem",color:"rgba(255,255,255,0.5)"}}>Portal de Tutoriais</div>
       </div>
-
       <div className="sidebar-nav">
         <div className="sidebar-section">Menu</div>
         {nav.map(i=>(
@@ -473,31 +469,21 @@ function SidebarConteudo({perfil, tab, setTab, onSair}) {
           </div>
         ))}
       </div>
-
-      {/* LINKS ÚTEIS */}
       <div style={{padding:"0.75rem 1.25rem",borderTop:"1px solid rgba(255,255,255,0.1)"}}>
-        <div style={{fontSize:"0.62rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",color:"rgba(255,255,255,0.4)",marginBottom:"0.5rem"}}>Links</div>
-        <a href="https://universo.edu.br/" target="_blank" rel="noopener noreferrer"
-          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
-          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
-          🌐 Site UNIVERSO
-        </a>
-        <a href="https://api.whatsapp.com/send?phone=+5508007210251" target="_blank" rel="noopener noreferrer"
-          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
-          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
-          📱 WhatsApp Institucional
-        </a>
-        <a href="https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf" target="_blank" rel="noopener noreferrer"
-          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
-          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
-          📘 MIA 2026.1
-        </a>
+        <div style={{fontSize:"0.62rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",color:"rgba(255,255,255,0.4)",marginBottom:"0.5rem"}}>Links Úteis</div>
+        {[
+          {href:"https://universo.edu.br/",label:"🌐 Site UNIVERSO"},
+          {href:"https://api.whatsapp.com/send?phone=+5508007210251",label:"📱 WhatsApp"},
+          {href:"https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf",label:"📘 MIA 2026.1"},
+        ].map(l=>(
+          <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
+            style={{display:"block",padding:"0.4rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.65)",textDecoration:"none"}}>
+            {l.label}
+          </a>
+        ))}
       </div>
-
       <div className="sidebar-footer">
-        <div className="sidebar-perfil-tag">
-          {perfil==="gestor"?"⚙️ Gestor":perfil==="professor"?"👩‍🏫 Professor":"🎓 Aluno"}
-        </div>
+        <div className="sidebar-perfil-tag">{perfil==="gestor"?"⚙️ Gestor":perfil==="professor"?"👩‍🏫 Professor":"🎓 Aluno"}</div>
         {perfil!=="aluno"&&<button className="btn-sair" onClick={onSair}>Sair</button>}
       </div>
     </>
@@ -513,7 +499,7 @@ function PerfilSelector({onSelect}) {
       <div className="perfil-sub">Centro Universitário UNIVERSO Goiânia</div>
       <div className="perfil-cards">
         <div className="perfil-card" onClick={()=>onSelect("aluno")}><div className="perfil-card-icon">🎓</div><div className="perfil-card-label">Sou Aluno</div><div className="perfil-card-desc">Acesso direto aos tutoriais</div></div>
-        <div className="perfil-card" onClick={()=>onSelect("professor-login")}><div className="perfil-card-icon">👩‍🏫</div><div className="perfil-card-label">Sou Professor</div><div className="perfil-card-desc">Área exclusiva docente</div></div>
+        <div className="perfil-card" onClick={()=>onSelect("professor")}><div className="perfil-card-icon">👩‍🏫</div><div className="perfil-card-label">Sou Professor</div><div className="perfil-card-desc">Área exclusiva docente</div></div>
       </div>
       <div className="perfil-links">
         <a href="https://universo.edu.br/" target="_blank" rel="noopener noreferrer" className="perfil-link-btn">🌐 Site UNIVERSO</a>
@@ -548,7 +534,7 @@ function App() {
   const params    = new URLSearchParams(window.location.search);
   const urlP      = params.get("prof")==="1";
   const urlG      = params.get("g")==="1";
-  const [tela,setTela]   = useState(urlG?"gestor-login":urlP?"professor-login":"selector");
+  const [tela,setTela]   = useState(urlG?"gestor-login":urlP?"professor-direto":"selector");
   const [perfil,setPerfil]=useState(null);
   const [tab,setTab]     = useState("tutoriais");
   const [toast,setToast] = useState(null);
@@ -561,9 +547,13 @@ function App() {
   function entrar(p){setPerfil(p);setTela("app");setTab(p==="gestor"?"tutoriais-aluno":"tutoriais");}
   function sair(){setPerfil(null);setTela("selector");}
 
-  if(tela==="selector") return <PerfilSelector onSelect={t=>{if(t==="aluno")entrar("aluno");else setTela(t);}}/>;
-  if(tela==="professor-login") return <LoginSenha perfil="professor" onSuccess={()=>entrar("professor")} onBack={urlP?null:()=>setTela("selector")}/>;
-  if(tela==="gestor-login")    return <LoginSenha perfil="gestor"    onSuccess={()=>entrar("gestor")}    onBack={urlG?null:()=>setTela("selector")}/>;
+  if(tela==="professor-direto"){entrar("professor");return null;}
+  if(tela==="selector") return <PerfilSelector onSelect={t=>{
+    if(t==="aluno") entrar("aluno");
+    else if(t==="professor") entrar("professor");
+    else setTela(t);
+  }}/>;
+  if(tela==="gestor-login") return <LoginSenha perfil="gestor" onSuccess={()=>entrar("gestor")} onBack={urlG?null:()=>setTela("selector")}/>;
   if(!perfil){entrar("aluno");return null;}
 
   const lista = tab==="tutoriais-prof"?todos.filter(t=>t.perfil==="professor"):tab==="tutoriais-aluno"?todos.filter(t=>t.perfil==="aluno"):tutoriais;
