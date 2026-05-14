@@ -1,9 +1,6 @@
 // ============================================================
-// TUTORIAIS UNIVERSO — React + Firebase
-// Versão 2.0 — Acesso público por URL, sem login para alunos/professores
-// Aluno:    URL normal        → área aluno direto
-// Professor: URL ?prof=1     → área professor direto
-// Gestor:   URL ?g=1         → pede senha → painel gestão
+// TUTORIAIS UNIVERSO — v2.0
+// Aluno: acesso direto | Professor: senha | Gestor: ?g=1
 // ============================================================
 
 const { useState, useEffect, useRef } = React;
@@ -20,423 +17,547 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ===== CONSTANTES =====
-const GESTOR_SENHA = "universo2025";
+// ===== SENHAS =====
+const SENHA_PROF   = "profuniverso2025";
+const SENHA_GESTOR = "gestoruniverso2025";
+
+// ===== LOGOS =====
 const LOGO_TEXTO    = "logo-texto.png";
 const LOGO_ESCUDO   = "logo-escud.png";
 const LOGO_COMPLETO = "logo-complet.png";
 
-const CATEGORIAS = ["Matrícula","Financeiro","AVA / EAD","Secretaria","Calendário","Estágio / TCC","Bolsas","Outros"];
-const TIPOS = ["Texto","PDF","Vídeo","Link","Imagem"];
+// ===== CATEGORIAS =====
+const CATS_ALUNO = ["Matrícula", "Financeiro", "AVA / EAD", "Secretaria", "Calendário", "Estágio / TCC", "Bolsas", "Outros"];
+const CATS_PROF  = ["Plano de Ensino", "Lançamento de Notas", "Frequência", "AVA / EAD", "Documentos", "Outros"];
 
-// Detecta perfil pela URL
-function detectarPerfil() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has("g")) return "gestor-login";
-  if (params.has("prof")) return "professor";
-  return "aluno";
-}
+// ===== EMOJIS POR CATEGORIA =====
+const CAT_EMOJI = {
+  "Matrícula": "🎓", "Financeiro": "💳", "AVA / EAD": "💻",
+  "Secretaria": "📋", "Calendário": "📅", "Estágio / TCC": "📝",
+  "Bolsas": "🏅", "Outros": "📌",
+  "Plano de Ensino": "📚", "Lançamento de Notas": "✏️",
+  "Frequência": "✅", "Documentos": "🗂️",
+};
 
-// Dados demo (quando Firebase não configurado)
-const DEMO_TUTORIAIS = [
-  { id:"d1", titulo:"Bem-vindos ao UNIVERSO-GO 2026.1", descricao:"Guia completo de boas-vindas para calouros — tudo que você precisa saber ao chegar.", categoria:"Matrícula", tipo:"Link", url:"https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf", imagem:"", destaque:true, numero:"01", publico:["aluno","professor"], passos:["Acesse o link abaixo para o guia completo","Salve o PDF para consulta futura","Dúvidas? Procure a Secretaria Acadêmica"], createdAt:{seconds:Date.now()/1000} },
-  { id:"d2", titulo:"Como confirmar sua matrícula", descricao:"Passo a passo para confirmar matrícula no portal acadêmico sem complicação.", categoria:"Matrícula", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"02", publico:["aluno"], passos:["Acesse portal.universo.edu.br","Clique em 'Matrícula' no menu","Confirme os dados e finalize","Guarde o comprovante"], createdAt:{seconds:Date.now()/1000-86400} },
-  { id:"d3", titulo:"Renovação de Matrícula", descricao:"Como renovar sua matrícula para o próximo semestre pelo portal do aluno.", categoria:"Matrícula", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"03", publico:["aluno"], passos:["Acesse o Portal do Aluno até a data limite","Selecione as disciplinas para o próximo período","Confirme e imprima o comprovante"], createdAt:{seconds:Date.now()/1000-172800} },
-  { id:"d4", titulo:"Acesso ao AVA — Ambiente Virtual", descricao:"Primeiro acesso ao ambiente virtual de aprendizagem e navegação nas disciplinas.", categoria:"AVA / EAD", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"04", publico:["aluno","professor"], passos:["Acesse ava.universo.edu.br","Use seu e-mail @universo.edu.br","Altere a senha provisória no primeiro acesso","Acesse 'Meus Cursos'"], createdAt:{seconds:Date.now()/1000-259200} },
-  { id:"d5", titulo:"Lançamento de Notas no AVA", descricao:"Como lançar e gerenciar notas dos alunos pelo ambiente virtual.", categoria:"AVA / EAD", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"05", publico:["professor"], passos:["Acesse ava.universo.edu.br com suas credenciais","Selecione a disciplina e turma","Clique em 'Lançar Notas'","Confirme e salve"], createdAt:{seconds:Date.now()/1000-345600} },
-  { id:"d6", titulo:"Entrega de Atestado Médico", descricao:"Procedimento correto para entrega de atestados e abono de faltas.", categoria:"Secretaria", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"06", publico:["aluno"], passos:["Entregue em até 72h após a falta","Protocole na Secretaria com RG e atestado original","Guarde o comprovante de protocolo"], createdAt:{seconds:Date.now()/1000-432000} },
-  { id:"d7", titulo:"Financeiro — Boleto e Pagamento", descricao:"Como gerar boleto, pagar mensalidade e consultar histórico financeiro.", categoria:"Financeiro", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"07", publico:["aluno"], passos:["Acesse o Portal do Aluno","Clique em 'Financeiro'","Gere o boleto do mês vigente","Pague até o vencimento"], createdAt:{seconds:Date.now()/1000-518400} },
-  { id:"d8", titulo:"Calendário Acadêmico 2026.1", descricao:"Datas importantes do semestre: provas, feriados, entregas e eventos.", categoria:"Calendário", tipo:"Texto", url:"", imagem:"", destaque:false, numero:"08", publico:["aluno","professor"], passos:["Consulte o calendário no portal","Marque as datas de P1, P2 e PS","Fique atento aos prazos de entrega de trabalhos"], createdAt:{seconds:Date.now()/1000-604800} },
+// ===== TUTORIAL DEMO (MIA 2026.1) =====
+const DEMO_ALUNO = [
+  {
+    id: "mia-2026",
+    numero: "01",
+    titulo: "Manual do Aluno — MIA 2026.1",
+    descricao: "Guia completo com todas as informações essenciais para o semestre 2026.1: matrícula, frequência, avaliações, biblioteca, direitos e deveres.",
+    categoria: "Matrícula",
+    tipo: "PDF",
+    url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf",
+    imagem: "",
+    destaque: true,
+    perfil: "aluno",
+    passos: [
+      "Acesse o PDF pelo botão abaixo — ele abre direto no navegador",
+      "Use o sumário nas primeiras páginas para navegar pelos temas",
+      "Guarde o link ou baixe o PDF para consultar quando precisar",
+      "Dúvidas? Procure a Secretaria Acadêmica presencialmente ou pelo portal"
+    ],
+    tags: ["MIA", "manual", "matrícula", "2026"],
+    createdAt: { seconds: Date.now() / 1000 }
+  },
+  {
+    id: "matricula-confirmacao",
+    numero: "02",
+    titulo: "Como Confirmar a Matrícula",
+    descricao: "Passo a passo para confirmar sua matrícula no Portal do Aluno. Obrigatório para todos os semestres.",
+    categoria: "Matrícula",
+    tipo: "Texto",
+    url: "",
+    imagem: "",
+    destaque: false,
+    perfil: "aluno",
+    passos: [
+      "Acesse portal.universo.edu.br com seu CPF e senha",
+      "Clique em 'Matrícula' no menu lateral esquerdo",
+      "Verifique as disciplinas listadas para o semestre",
+      "Clique em 'Confirmar Matrícula' e aguarde a mensagem de sucesso",
+      "Imprima ou salve o comprovante gerado — guarde bem!"
+    ],
+    tags: ["matrícula", "portal", "confirmação"],
+    createdAt: { seconds: (Date.now() / 1000) - 86400 }
+  },
+  {
+    id: "ava-acesso",
+    numero: "03",
+    titulo: "Acessando o AVA (Ambiente Virtual)",
+    descricao: "Como fazer login no ambiente virtual e encontrar suas disciplinas online.",
+    categoria: "AVA / EAD",
+    tipo: "Texto",
+    url: "",
+    imagem: "",
+    destaque: false,
+    perfil: "aluno",
+    passos: [
+      "Acesse ava.universo.edu.br pelo navegador",
+      "Use o e-mail institucional @universo.edu.br como usuário",
+      "Na primeira entrada, sua senha provisória é seu CPF (só números)",
+      "Altere a senha assim que entrar — obrigatório",
+      "Clique em 'Meus Cursos' para ver suas disciplinas do semestre"
+    ],
+    tags: ["AVA", "EAD", "online", "acesso"],
+    createdAt: { seconds: (Date.now() / 1000) - 172800 }
+  },
+  {
+    id: "atestado-medico",
+    numero: "04",
+    titulo: "Entregando Atestado Médico",
+    descricao: "Procedimento correto para protocolar atestados e abonar faltas. Prazo: 72h após a falta.",
+    categoria: "Secretaria",
+    tipo: "Texto",
+    url: "",
+    imagem: "",
+    destaque: false,
+    perfil: "aluno",
+    passos: [
+      "O atestado deve ser entregue em até 72 horas após a(s) falta(s)",
+      "Dirija-se à Secretaria Acadêmica com RG e atestado original",
+      "Solicite o protocolo de entrega — guarde o comprovante",
+      "O abono de falta não substitui as atividades avaliativas perdidas",
+      "Para mais de 3 dias, verifique se é necessário laudo médico complementar"
+    ],
+    tags: ["atestado", "falta", "secretaria", "abono"],
+    createdAt: { seconds: (Date.now() / 1000) - 259200 }
+  },
 ];
 
-// ===== FIREBASE HOOK =====
-function useCollection(col) {
-  const [data, setData] = useState([]);
+const DEMO_PROF = [
+  {
+    id: "notas-lancamento",
+    numero: "P01",
+    titulo: "Lançamento de Notas no Portal",
+    descricao: "Como lançar as notas das avaliações no sistema acadêmico dentro do prazo.",
+    categoria: "Lançamento de Notas",
+    tipo: "Texto",
+    url: "",
+    imagem: "",
+    destaque: true,
+    perfil: "professor",
+    passos: [
+      "Acesse o Portal do Professor em portal.universo.edu.br",
+      "Clique em 'Diário de Classe' no menu",
+      "Selecione a disciplina e a turma desejada",
+      "Clique em 'Lançar Notas' e preencha os campos corretamente",
+      "Salve e confirme — o prazo para lançamento é definido pelo calendário acadêmico"
+    ],
+    tags: ["notas", "diário", "portal", "avaliação"],
+    createdAt: { seconds: Date.now() / 1000 }
+  },
+];
+
+// ===== HOOK FIREBASE =====
+function useCollection(colecao, filtro) {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = db.collection(col).onSnapshot(
-      snap => {
-        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        docs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        setData(docs);
-        setLoading(false);
-      },
-      () => { setData(DEMO_TUTORIAIS); setLoading(false); }
-    );
+    if (firebaseConfig.apiKey === "COLE_AQUI") {
+      setData(filtro === "professor" ? DEMO_PROF : DEMO_ALUNO.filter(t => !filtro || t.perfil === filtro || filtro === "gestor"));
+      setLoading(false);
+      return;
+    }
+    let q = db.collection(colecao);
+    if (filtro && filtro !== "gestor") q = q.where("perfil", "==", filtro);
+    const unsub = q.onSnapshot(snap => {
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      docs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      setData(docs);
+      setLoading(false);
+    }, () => {
+      setData(filtro === "professor" ? DEMO_PROF : DEMO_ALUNO);
+      setLoading(false);
+    });
     return unsub;
-  }, [col]);
+  }, [colecao, filtro]);
 
-  return { data, loading };
-}
-
-// ===== ÍCONES SVG =====
-const I = {
-  menu:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-  book:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>,
-  search:   () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-  plus:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  edit:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
-  trash:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>,
-  x:        () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-  check:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 12 4 8"/></svg>,
-  link:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
-  file:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
-  video:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>,
-  image:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
-  text:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>,
-  arrow:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
-  back:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
-  settings: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-  list:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>,
-  download: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-  chevron:  () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>,
-  info:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
-  users:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  logout:   () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
-};
-
-const TIPO_ICON = { "PDF": I.file, "Vídeo": I.video, "Link": I.link, "Imagem": I.image, "Texto": I.text };
-
-const CAT_COR = {
-  "Matrícula": "pill-navy", "Financeiro": "pill-yellow", "AVA / EAD": "pill-blue",
-  "Secretaria": "pill-green", "Calendário": "pill-blue", "Estágio / TCC": "pill-gray",
-  "Bolsas": "pill-green", "Outros": "pill-gray",
-};
-
-function CatPill({ cat }) {
-  return <span className={`pill ${CAT_COR[cat] || "pill-gray"}`}>{cat}</span>;
+  return { data: data || [], loading };
 }
 
 // ===== TOAST =====
 function Toast({ msg, type, onClose }) {
   useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
-  return <div className={`toast ${type}`}>{type === "success" ? <I.check /> : <I.info />}{msg}</div>;
+  return <div className={`toast ${type}`}>{type === "success" ? "✓" : "!"} {msg}</div>;
 }
 
-// ===== LOGIN GESTOR =====
-function GestorLogin({ onLogin }) {
+// ===== PILL CATEGORIA =====
+const CAT_COLORS = {
+  "Matrícula": "pill-verm", "Financeiro": "pill-amber", "AVA / EAD": "pill-azul",
+  "Secretaria": "pill-verde", "Calendário": "pill-azul", "Estágio / TCC": "pill-cinza",
+  "Bolsas": "pill-verde", "Outros": "pill-cinza",
+  "Plano de Ensino": "pill-azul", "Lançamento de Notas": "pill-amber",
+  "Frequência": "pill-verde", "Documentos": "pill-cinza",
+};
+function Pill({ cat }) {
+  return <span className={`pill ${CAT_COLORS[cat] || "pill-cinza"}`}>{cat}</span>;
+}
+
+// ===== TIPO EMOJI =====
+const TIPO_EMOJI = { "PDF": "📄", "Vídeo": "🎬", "Link": "🔗", "Imagem": "🖼️", "Texto": "📝" };
+
+// ===== PERFIL SELECTOR =====
+function PerfilSelector({ onSelect }) {
+  const params = new URLSearchParams(window.location.search);
+  const isProf = params.get("prof") === "1";
+  const isGestor = params.get("g") === "1";
+
+  // Auto-redirecionar se veio por link direto
+  useEffect(() => {
+    if (isProf) onSelect("professor-login");
+    if (isGestor) onSelect("gestor-login");
+  }, []);
+
+  if (isProf || isGestor) return <div className="spinner-wrap"><div className="spinner" /></div>;
+
+  return (
+    <div className="perfil-page">
+      <div className="perfil-logo">
+        <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
+      </div>
+      <div className="perfil-titulo">Portal de Tutoriais</div>
+      <div className="perfil-sub">Centro Universitário UNIVERSO Goiânia</div>
+      <div className="perfil-cards">
+        <div className="perfil-card" onClick={() => onSelect("aluno")}>
+          <div className="perfil-card-icon">🎓</div>
+          <div className="perfil-card-label">Sou Aluno</div>
+          <div className="perfil-card-desc">Acesso direto aos tutoriais</div>
+        </div>
+        <div className="perfil-card" onClick={() => onSelect("professor-login")}>
+          <div className="perfil-card-icon">👩‍🏫</div>
+          <div className="perfil-card-label">Sou Professor</div>
+          <div className="perfil-card-desc">Área exclusiva docente</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== LOGIN COM SENHA =====
+function LoginSenha({ perfil, onSuccess, onBack }) {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
 
-  function entrar() {
-    if (senha === GESTOR_SENHA) onLogin();
-    else setErro("Senha incorreta.");
+  function tentar() {
+    const correta = perfil === "professor" ? SENHA_PROF : SENHA_GESTOR;
+    if (senha === correta) { onSuccess(); }
+    else { setErro("Senha incorreta. Tente novamente."); }
   }
 
+  const labels = {
+    professor: { titulo: "Área do Professor", sub: "Digite a senha para acessar os tutoriais docentes" },
+    gestor: { titulo: "Área do Gestor", sub: "Acesso restrito à gestão do sistema" },
+  };
+  const l = labels[perfil];
+
   return (
-    <div className="gestor-page">
-      <div className="gestor-card">
-        <div className="gestor-logo">
-          <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display="none"} />
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-card-logo">
+          <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
         </div>
-        <div className="gestor-title">Área do Gestor</div>
-        <div className="gestor-subtitle">Acesso restrito — gestão de conteúdo</div>
-        <div className="gestor-field">
-          <label>Senha</label>
-          <input type="password" placeholder="••••••••" value={senha}
-            onChange={e => setSenha(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && entrar()} autoFocus />
+        <div className="login-card-title">{l.titulo}</div>
+        <div className="login-card-sub">{l.sub}</div>
+        <div className="login-field">
+          <label className="form-label">Senha de acesso</label>
+          <input className="form-input" type="password" placeholder="••••••••" value={senha}
+            onChange={e => setSenha(e.target.value)} onKeyDown={e => e.key === "Enter" && tentar()} autoFocus />
         </div>
-        {erro && <div className="gestor-error">{erro}</div>}
-        <button className="gestor-btn" onClick={entrar}>Entrar</button>
+        {erro && <div className="login-error">{erro}</div>}
+        <button className="login-btn" onClick={tentar}>Entrar</button>
+        {onBack && <div className="login-back" onClick={onBack}>← Voltar</div>}
       </div>
     </div>
   );
 }
 
 // ===== CARD TUTORIAL =====
-function TutorialCard({ t, onClick }) {
-  const Icone = TIPO_ICON[t.tipo] || I.file;
+function TCard({ t, onClick }) {
+  const emoji = CAT_EMOJI[t.categoria] || "📌";
+  const tipoEmoji = TIPO_EMOJI[t.tipo] || "📝";
   return (
-    <div className="tutorial-card" onClick={() => onClick(t)}>
-      <div className="tutorial-card-thumb">
-        {t.imagem
-          ? <img src={t.imagem} alt={t.titulo} onError={e => e.target.style.display="none"} />
-          : <div className="tutorial-card-thumb-placeholder"><I.book /></div>
-        }
-        {t.numero && <div className="tutorial-card-badge">Tutorial {t.numero}</div>}
-        {!t.numero && t.destaque && <div className="tutorial-card-badge destaque">★ Destaque</div>}
+    <div className="tcard" onClick={() => onClick(t)}>
+      <div className="tcard-thumb">
+        {t.imagem ? (
+          <img src={t.imagem} alt={t.titulo} onError={e => e.target.style.display="none"} />
+        ) : (
+          <div className="tcard-thumb-placeholder">{emoji}</div>
+        )}
+        {t.numero && <div className="tcard-badge">Tutorial {t.numero}</div>}
       </div>
-      <div className="tutorial-card-body">
-        <div className="tutorial-card-title">{t.titulo}</div>
-        <div className="tutorial-card-desc">{t.descricao}</div>
-        <div className="tutorial-card-footer">
-          <div className="tutorial-card-type"><Icone /> {t.tipo}</div>
-          <CatPill cat={t.categoria} />
-          <div className="tutorial-card-action">Ver <I.arrow /></div>
+      <div className="tcard-body">
+        <div className="tcard-title">{t.titulo}</div>
+        <div className="tcard-desc">{t.descricao}</div>
+        <div className="tcard-footer">
+          <div className="tcard-tipo">{tipoEmoji} {t.tipo}</div>
+          <Pill cat={t.categoria} />
+          <div className="tcard-ver">Ver →</div>
         </div>
       </div>
     </div>
   );
 }
 
-// ===== VISUALIZAÇÃO =====
-function TutorialView({ t, onBack }) {
-  const Icone = TIPO_ICON[t.tipo] || I.file;
-
+// ===== VISUALIZAÇÃO TUTORIAL =====
+function TView({ t, onBack }) {
   function renderConteudo() {
     if (t.tipo === "PDF" && t.url) return (
       <div>
-        <a href={t.url} target="_blank" rel="noopener noreferrer" className="tutorial-link-btn" style={{display:"flex",marginBottom:"1rem"}}>
-          <I.download /> Abrir / Baixar PDF
+        <a href={t.url} target="_blank" rel="noopener noreferrer" className="link-btn" style={{ display: "flex", marginBottom: "1rem" }}>
+          <span className="link-btn-icon">📥</span> Abrir / Baixar PDF
         </a>
         <iframe src={t.url} className="tutorial-iframe" title={t.titulo} />
       </div>
     );
     if (t.tipo === "Vídeo" && t.url) {
       const id = t.url.match(/(?:v=|youtu\.be\/)([^&?]+)/)?.[1];
-      const src = id ? `https://www.youtube.com/embed/${id}` : t.url;
-      return <iframe src={src} className="tutorial-iframe" allowFullScreen title={t.titulo} />;
+      const embed = id ? `https://www.youtube.com/embed/${id}` : t.url;
+      return <iframe src={embed} className="tutorial-iframe" allowFullScreen title={t.titulo} />;
     }
     if (t.tipo === "Link" && t.url) return (
-      <a href={t.url} target="_blank" rel="noopener noreferrer" className="tutorial-link-btn">
-        <I.link /> {t.url.length > 65 ? t.url.slice(0,65)+"…" : t.url}
+      <a href={t.url} target="_blank" rel="noopener noreferrer" className="link-btn">
+        <span className="link-btn-icon">🔗</span>
+        {t.url.length > 55 ? t.url.slice(0, 55) + "…" : t.url}
       </a>
     );
     if (t.tipo === "Imagem" && t.url) return <img src={t.url} alt={t.titulo} className="tutorial-img" />;
     return null;
   }
 
-  const conteudo = renderConteudo();
-
   return (
-    <div className="tutorial-view">
-      <div className="tutorial-view-header">
-        <div className="tutorial-breadcrumb">
+    <div className="tview">
+      <div className="tview-header">
+        <div className="tview-breadcrumb">
           <a onClick={onBack}>Tutoriais</a>
-          <I.chevron />
-          <span>{t.categoria}</span>
-          <I.chevron />
-          <span>{t.titulo.length > 40 ? t.titulo.slice(0,40)+"…" : t.titulo}</span>
+          <span>›</span>
+          <Pill cat={t.categoria} />
+          <span>›</span>
+          <span style={{ color: "var(--cinza-texto)" }}>{t.titulo.length > 45 ? t.titulo.slice(0,45)+"…" : t.titulo}</span>
         </div>
-        <div className="tutorial-view-title">{t.titulo}</div>
-        <div className="tutorial-view-meta">
-          <CatPill cat={t.categoria} />
-          <span style={{display:"flex",alignItems:"center",gap:4}}><Icone /> {t.tipo}</span>
-          {t.numero && <span>Tutorial {t.numero}</span>}
+        <div className="tview-title">{t.titulo}</div>
+        <div className="tview-meta">
+          <Pill cat={t.categoria} />
+          <span>{TIPO_EMOJI[t.tipo]} {t.tipo}</span>
+          {t.numero && <span>📌 Tutorial {t.numero}</span>}
         </div>
       </div>
 
       {t.descricao && (
-        <div className="tutorial-content-block">
-          <h3><I.info /> Sobre este tutorial</h3>
-          <p style={{color:"var(--gray-text)",lineHeight:1.7,fontSize:"0.88rem"}}>{t.descricao}</p>
+        <div className="tblock">
+          <div className="tblock-title"><span className="tblock-icon">ℹ️</span> Sobre este tutorial</div>
+          <div className="tview-desc">{t.descricao}</div>
         </div>
       )}
 
       {(t.passos || []).filter(Boolean).length > 0 && (
-        <div className="tutorial-content-block">
-          <h3><I.list /> Passo a passo</h3>
-          <div className="tutorial-steps">
+        <div className="tblock">
+          <div className="tblock-title"><span className="tblock-icon">📋</span> Passo a passo</div>
+          <div className="steps">
             {t.passos.filter(Boolean).map((p, i) => (
-              <div className="tutorial-step" key={i}>
-                <div className="tutorial-step-num">{i+1}</div>
-                <div className="tutorial-step-text">{p}</div>
+              <div className="step" key={i}>
+                <div className="step-num">{i + 1}</div>
+                <div className="step-txt">{p}</div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {conteudo && (
-        <div className="tutorial-content-block">
-          <h3><Icone /> Conteúdo</h3>
-          {conteudo}
+      {renderConteudo() && (
+        <div className="tblock">
+          <div className="tblock-title"><span className="tblock-icon">{TIPO_EMOJI[t.tipo]}</span> Conteúdo</div>
+          {renderConteudo()}
         </div>
       )}
 
-      <div style={{textAlign:"center",marginTop:"1.25rem",marginBottom:"0.5rem"}}>
-        <button className="btn btn-secondary" onClick={onBack}><I.back /> Voltar</button>
+      <div style={{ textAlign: "center", marginTop: "1.5rem", marginBottom: "1rem" }}>
+        <button className="btn btn-outline" onClick={onBack}>← Voltar aos tutoriais</button>
       </div>
     </div>
   );
 }
 
-// ===== MÓDULO TUTORIAIS (público) =====
-function ModuloTutoriais({ tutoriais, perfil }) {
+// ===== MÓDULO TUTORIAIS (leitura) =====
+function ModuloTutoriais({ perfil, tutoriais, shareUrl }) {
   const [busca, setBusca] = useState("");
-  const [catAtiva, setCatAtiva] = useState("Todos");
+  const [cat, setCat] = useState("Todos");
   const [aberto, setAberto] = useState(null);
 
-  // Filtra por perfil
-  const dosPerfil = tutoriais.filter(t => {
-    if (!t.publico || t.publico.length === 0) return true;
-    return t.publico.includes(perfil);
-  });
+  const cats = perfil === "professor" ? CATS_PROF : CATS_ALUNO;
+  const catsUsadas = ["Todos", ...cats.filter(c => tutoriais.some(t => t.categoria === c))];
 
-  const filtrados = dosPerfil.filter(t => {
-    const ok1 = catAtiva === "Todos" || t.categoria === catAtiva;
+  const filtrados = tutoriais.filter(t => {
+    const okCat = cat === "Todos" || t.categoria === cat;
     const q = busca.toLowerCase();
-    const ok2 = !q || t.titulo.toLowerCase().includes(q) || t.descricao?.toLowerCase().includes(q) || t.categoria?.toLowerCase().includes(q);
-    return ok1 && ok2;
+    const okBusca = !q || t.titulo.toLowerCase().includes(q) || t.descricao?.toLowerCase().includes(q) || (t.tags || []).some(tg => tg.toLowerCase().includes(q));
+    return okCat && okBusca;
   });
 
-  const catsUsadas = ["Todos", ...CATEGORIAS.filter(c => dosPerfil.some(t => t.categoria === c))];
+  if (aberto) return <TView t={aberto} onBack={() => setAberto(null)} />;
 
-  const titulo = perfil === "professor" ? "Tutoriais para Professores" : "Tutoriais para Alunos";
-  const subtitulo = perfil === "professor"
-    ? "Guias e procedimentos para docentes do UNIVERSO Goiânia"
-    : "Tudo que você precisa saber sobre a vida acadêmica no UNIVERSO";
+  const heroBanner = perfil === "professor"
+    ? { emoji: "👩‍🏫", titulo: "Tutoriais para Professores", sub: "Guias práticos para o dia a dia docente na UNIVERSO Goiânia" }
+    : { emoji: "🎓", titulo: "Tutoriais para Alunos", sub: "Tudo que você precisa saber para aproveitar ao máximo a sua vida acadêmica" };
 
-  if (aberto) return <TutorialView t={aberto} onBack={() => setAberto(null)} />;
+  function copiarLink() {
+    navigator.clipboard.writeText(shareUrl).then(() => alert("Link copiado! Compartilhe com seus " + (perfil === "professor" ? "colegas professores" : "colegas alunos") + "."));
+  }
 
   return (
     <div>
-      {/* Hero */}
+      {/* Banner */}
       <div className="hero-banner">
-        <img src={LOGO_COMPLETO} alt="UNIVERSO" onError={e => e.target.style.display="none"} />
-        <div>
-          <div className="hero-title">{titulo}</div>
-          <div className="hero-sub">{subtitulo}</div>
+        <div className="hero-banner-logo">
+          <img src={LOGO_COMPLETO} alt="UNIVERSO" onError={e => e.target.style.display="none"} />
         </div>
-        <div className="hero-count">
-          <div className="hero-count-num">{dosPerfil.length}</div>
-          <div className="hero-count-label">tutoriais disponíveis</div>
+        <div className="hero-banner-text">
+          <h2>{heroBanner.titulo}</h2>
+          <p>{heroBanner.sub}</p>
         </div>
+        <button className="hero-share-btn" onClick={copiarLink}>
+          🔗 Compartilhar esta página
+        </button>
       </div>
 
-      {/* Busca */}
-      <div style={{display:"flex",gap:"0.75rem",marginBottom:"1.1rem",flexWrap:"wrap",alignItems:"center"}}>
-        <div className="top-bar-search" style={{maxWidth:420,flex:1,background:"white"}}>
-          <I.search />
-          <input placeholder="Buscar por título, categoria…" value={busca} onChange={e => setBusca(e.target.value)} />
-        </div>
-        {busca && <span style={{fontSize:"0.8rem",color:"var(--gray-muted)"}}>{filtrados.length} resultado{filtrados.length !== 1 ? "s" : ""}</span>}
+      {/* Busca mobile */}
+      <div className="searchbar" style={{ marginBottom: "1rem", maxWidth: "100%", display: "flex" }}>
+        <span className="searchbar-icon">🔍</span>
+        <input placeholder="Buscar tutoriais…" value={busca} onChange={e => setBusca(e.target.value)} />
       </div>
 
       {/* Filtros */}
       <div className="filter-bar">
         {catsUsadas.map(c => (
-          <button key={c} className={`filter-chip${catAtiva === c ? " active" : ""}`} onClick={() => setCatAtiva(c)}>
-            {c} {c !== "Todos" && <span style={{opacity:0.65}}>({dosPerfil.filter(t => t.categoria === c).length})</span>}
+          <button key={c} className={`filter-chip${cat === c ? " active" : ""}`} onClick={() => setCat(c)}>
+            {CAT_EMOJI[c] || ""} {c}
+            {c !== "Todos" && <span style={{ marginLeft: "0.3rem", opacity: 0.65 }}>({tutoriais.filter(t => t.categoria === c).length})</span>}
           </button>
         ))}
       </div>
 
-      {filtrados.length === 0
-        ? <div className="empty-state"><I.book /><h3>Nenhum tutorial encontrado</h3><p>Tente mudar os filtros ou a busca</p></div>
-        : <div className="tutorials-grid">{filtrados.map(t => <TutorialCard key={t.id} t={t} onClick={setAberto} />)}</div>
-      }
+      {/* Grid */}
+      {filtrados.length === 0 ? (
+        <div className="empty">
+          <div className="empty-icon">📭</div>
+          <h3>Nenhum tutorial encontrado</h3>
+          <p>Tente outros termos ou mude o filtro de categoria</p>
+        </div>
+      ) : (
+        <div className="tutorials-grid">
+          {filtrados.map(t => <TCard key={t.id} t={t} onClick={setAberto} />)}
+        </div>
+      )}
     </div>
   );
 }
 
-// ===== MODAL GESTOR =====
-function ModalTutorial({ tutorial, onClose, onSave, onDelete }) {
+// ===== MODAL ADMIN =====
+function ModalTutorial({ tutorial, perfil, onClose, onSave, onDelete }) {
   const isNew = !tutorial?.id;
+  const cats = perfil === "professor" ? CATS_PROF : CATS_ALUNO;
   const [form, setForm] = useState(tutorial || {
-    numero:"", titulo:"", descricao:"", categoria:CATEGORIAS[0],
-    tipo:"Texto", url:"", imagem:"", destaque:false,
-    publico:["aluno"], passos:["","","",""]
+    numero: "", titulo: "", descricao: "", categoria: cats[0],
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    perfil: perfil, passos: ["", "", ""]
   });
 
-  const set = (k, v) => setForm(f => ({...f, [k]: v}));
-  const setPasso = (i, v) => { const p=[...(form.passos||[])]; p[i]=v; setForm(f=>({...f,passos:p})); };
-  const addPasso = () => setForm(f => ({...f, passos:[...(f.passos||[]),""] }));
-  const remPasso = i => { const p=[...(form.passos||[])]; p.splice(i,1); setForm(f=>({...f,passos:p})); };
-  const togglePublico = v => {
-    const cur = form.publico || [];
-    const novo = cur.includes(v) ? cur.filter(x=>x!==v) : [...cur,v];
-    set("publico", novo);
-  };
+  function sf(k, v) { setForm(f => ({ ...f, [k]: v })); }
+  function setPasso(i, v) { const p = [...form.passos]; p[i] = v; sf("passos", p); }
+  function addPasso() { sf("passos", [...form.passos, ""]); }
+  function rmPasso(i) { const p = [...form.passos]; p.splice(i, 1); sf("passos", p); }
+
+  async function salvar() {
+    if (!form.titulo.trim()) { alert("Digite o título"); return; }
+    onSave(form);
+  }
 
   return (
-    <div className="modal-backdrop" onClick={e => e.target===e.currentTarget && onClose()}>
+    <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
-        <div className="modal-header">
-          <div className="modal-title">{isNew ? "Novo Tutorial" : "Editar Tutorial"}</div>
-          <button className="modal-close" onClick={onClose}><I.x /></button>
+        <div className="modal-hdr">
+          <div className="modal-hdr-title">{isNew ? "Novo Tutorial" : "Editar Tutorial"}</div>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
         <div className="modal-body">
           <div className="form-row">
             <div className="form-field">
-              <label>Número</label>
-              <input placeholder="Ex: 01" value={form.numero} onChange={e=>set("numero",e.target.value)} />
+              <label className="form-label">Número</label>
+              <input className="form-input" placeholder="Ex: 01" value={form.numero} onChange={e => sf("numero", e.target.value)} />
             </div>
             <div className="form-field">
-              <label>Categoria</label>
-              <select value={form.categoria} onChange={e=>set("categoria",e.target.value)}>
-                {CATEGORIAS.map(c=><option key={c}>{c}</option>)}
+              <label className="form-label">Perfil</label>
+              <select className="form-input" value={form.perfil} onChange={e => sf("perfil", e.target.value)}>
+                <option value="aluno">Aluno</option>
+                <option value="professor">Professor</option>
               </select>
             </div>
           </div>
-
           <div className="form-field">
-            <label>Título *</label>
-            <input placeholder="Título claro e direto" value={form.titulo} onChange={e=>set("titulo",e.target.value)} />
+            <label className="form-label">Categoria</label>
+            <select className="form-input" value={form.categoria} onChange={e => sf("categoria", e.target.value)}>
+              {(form.perfil === "professor" ? CATS_PROF : CATS_ALUNO).map(c => <option key={c}>{c}</option>)}
+            </select>
           </div>
-
           <div className="form-field">
-            <label>Descrição</label>
-            <textarea rows={2} placeholder="Breve descrição do que este tutorial ensina" value={form.descricao} onChange={e=>set("descricao",e.target.value)} />
+            <label className="form-label">Título *</label>
+            <input className="form-input" placeholder="Título do tutorial" value={form.titulo} onChange={e => sf("titulo", e.target.value)} />
           </div>
-
+          <div className="form-field">
+            <label className="form-label">Descrição</label>
+            <textarea className="form-input" rows={2} placeholder="Breve explicação do tutorial" value={form.descricao} onChange={e => sf("descricao", e.target.value)} />
+          </div>
           <div className="form-row">
             <div className="form-field">
-              <label>Tipo de conteúdo</label>
-              <select value={form.tipo} onChange={e=>set("tipo",e.target.value)}>
-                {TIPOS.map(t=><option key={t}>{t}</option>)}
+              <label className="form-label">Tipo de conteúdo</label>
+              <select className="form-input" value={form.tipo} onChange={e => sf("tipo", e.target.value)}>
+                {["Texto","PDF","Vídeo","Link","Imagem"].map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
-            <div className="form-field">
-              <label>Visível para</label>
-              <div style={{display:"flex",gap:"0.75rem",paddingTop:"0.3rem"}}>
-                {["aluno","professor"].map(p => (
-                  <label key={p} style={{display:"flex",alignItems:"center",gap:"0.4rem",cursor:"pointer",fontSize:"0.875rem",fontWeight:500}}>
-                    <input type="checkbox" checked={(form.publico||[]).includes(p)} onChange={()=>togglePublico(p)} style={{width:"auto",accentColor:"var(--navy)"}} />
-                    {p.charAt(0).toUpperCase()+p.slice(1)}
-                  </label>
-                ))}
+            <div className="form-field" style={{ display: "flex", alignItems: "center", paddingTop: "1.5rem" }}>
+              <div className="form-check">
+                <input type="checkbox" id="destaque" checked={!!form.destaque} onChange={e => sf("destaque", e.target.checked)} />
+                <label htmlFor="destaque">Destaque</label>
               </div>
             </div>
           </div>
-
           {form.tipo !== "Texto" && (
             <div className="form-field">
-              <label>URL ({form.tipo})</label>
-              <input
-                placeholder={form.tipo==="PDF"?"https://...arquivo.pdf":form.tipo==="Vídeo"?"https://youtube.com/watch?v=...":"https://..."}
-                value={form.url} onChange={e=>set("url",e.target.value)}
-              />
+              <label className="form-label">URL do conteúdo</label>
+              <input className="form-input" placeholder="https://…" value={form.url} onChange={e => sf("url", e.target.value)} />
               <div className="form-hint">
-                {form.tipo==="PDF" && "Link direto do PDF (Google Drive, site da instituição…)"}
-                {form.tipo==="Vídeo" && "YouTube — o embed é gerado automaticamente"}
-                {form.tipo==="Link" && "Abre em nova aba ao clicar"}
-                {form.tipo==="Imagem" && "URL direta da imagem (.jpg, .png…)"}
+                {form.tipo === "PDF" && "Link direto para o PDF"}
+                {form.tipo === "Vídeo" && "Link do YouTube"}
+                {form.tipo === "Link" && "URL a ser aberta"}
+                {form.tipo === "Imagem" && "URL da imagem"}
               </div>
             </div>
           )}
-
           <div className="form-field">
-            <label>Imagem de capa (URL, opcional)</label>
-            <input placeholder="https://...capa.jpg" value={form.imagem||""} onChange={e=>set("imagem",e.target.value)} />
+            <label className="form-label">Imagem de capa (URL, opcional)</label>
+            <input className="form-input" placeholder="https://…imagem.jpg" value={form.imagem || ""} onChange={e => sf("imagem", e.target.value)} />
           </div>
-
-          <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"1.1rem"}}>
-            <input type="checkbox" id="dest" checked={!!form.destaque} onChange={e=>set("destaque",e.target.checked)} style={{width:"auto",accentColor:"var(--navy)"}} />
-            <label htmlFor="dest" style={{textTransform:"none",fontSize:"0.875rem",fontWeight:500,cursor:"pointer"}}>Marcar como destaque</label>
-          </div>
-
           <div className="form-field">
-            <label>Passo a passo</label>
-            {(form.passos||[]).map((p,i) => (
-              <div key={i} style={{display:"flex",gap:"0.5rem",marginBottom:"0.45rem",alignItems:"center"}}>
-                <div style={{width:23,height:23,borderRadius:"50%",background:"var(--navy)",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.7rem",fontWeight:700,flexShrink:0}}>{i+1}</div>
-                <input placeholder={`Passo ${i+1}…`} value={p} onChange={e=>setPasso(i,e.target.value)} style={{flex:1}} />
-                {(form.passos||[]).length > 1 && <button onClick={()=>remPasso(i)} style={{color:"var(--gray-muted)",padding:"0 4px"}}><I.x /></button>}
+            <label className="form-label">Passo a passo</label>
+            {form.passos.map((p, i) => (
+              <div key={i} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "center" }}>
+                <div style={{ width:24, height:24, borderRadius:"50%", background:"var(--azul)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.72rem", fontWeight:700, flexShrink:0 }}>{i+1}</div>
+                <input className="form-input" style={{ flex:1 }} placeholder={`Passo ${i+1}`} value={p} onChange={e => setPasso(i, e.target.value)} />
+                {form.passos.length > 1 && <button onClick={() => rmPasso(i)} style={{ color:"var(--cinza-muted)", flexShrink:0 }}>✕</button>}
               </div>
             ))}
-            <button onClick={addPasso} style={{color:"var(--navy)",fontSize:"0.8rem",fontWeight:600,display:"flex",alignItems:"center",gap:"0.3rem",marginTop:"0.2rem"}}>
-              <I.plus /> Adicionar passo
+            <button onClick={addPasso} style={{ color:"var(--azul)", fontSize:"0.82rem", fontWeight:700, display:"flex", alignItems:"center", gap:"0.3rem", marginTop:"0.25rem" }}>
+              + Adicionar passo
             </button>
           </div>
         </div>
-        <div className="modal-footer">
-          <div>{!isNew && <button className="btn btn-danger" onClick={()=>onDelete(tutorial.id)}><I.trash /> Excluir</button>}</div>
-          <div style={{display:"flex",gap:"0.5rem"}}>
-            <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-            <button className="btn btn-primary" onClick={()=>{ if(!form.titulo.trim()){alert("Digite o título");return;} onSave(form); }}><I.check /> Salvar</button>
+        <div className="modal-ftr">
+          <div>{!isNew && <button className="btn btn-danger btn-sm" onClick={() => onDelete(tutorial.id)}>🗑 Excluir</button>}</div>
+          <div style={{ display:"flex", gap:"0.5rem" }}>
+            <button className="btn btn-outline btn-sm" onClick={onClose}>Cancelar</button>
+            <button className="btn btn-primary btn-sm" onClick={salvar}>✓ Salvar</button>
           </div>
         </div>
       </div>
@@ -445,139 +566,155 @@ function ModalTutorial({ tutorial, onClose, onSave, onDelete }) {
 }
 
 // ===== MÓDULO GESTOR =====
-function ModuloGestor({ tutoriais, setToast }) {
+function ModuloGestor({ todos, setToast }) {
   const [modal, setModal] = useState(null);
-  const [tabPerfil, setTabPerfil] = useState("aluno");
   const [busca, setBusca] = useState("");
+  const [filtroPerfil, setFiltroPerfil] = useState("todos");
+  const base = window.location.origin + window.location.pathname;
 
-  const filtrados = tutoriais.filter(t => {
-    const matchPerfil = !t.publico || t.publico.length === 0 || t.publico.includes(tabPerfil);
+  const filtrados = todos.filter(t => {
+    const okP = filtroPerfil === "todos" || t.perfil === filtroPerfil;
     const q = busca.toLowerCase();
-    const matchBusca = !q || t.titulo.toLowerCase().includes(q);
-    return matchPerfil && matchBusca;
+    const okB = !q || t.titulo.toLowerCase().includes(q);
+    return okP && okB;
   });
 
   async function salvar(form) {
     const dados = {
-      numero: form.numero||"", titulo: form.titulo, descricao: form.descricao||"",
-      categoria: form.categoria, tipo: form.tipo, url: form.url||"",
-      imagem: form.imagem||"", destaque: !!form.destaque,
-      publico: form.publico||["aluno"],
-      passos: (form.passos||[]).filter(Boolean),
+      numero: form.numero || "", titulo: form.titulo, descricao: form.descricao || "",
+      categoria: form.categoria, tipo: form.tipo, url: form.url || "",
+      imagem: form.imagem || "", destaque: !!form.destaque, perfil: form.perfil,
+      passos: (form.passos || []).filter(Boolean),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
     try {
       if (form.id) {
         await db.collection("tutoriais").doc(form.id).update(dados);
-        setToast({msg:"Tutorial atualizado!", type:"success"});
+        setToast({ msg: "Tutorial atualizado!", type: "success" });
       } else {
         dados.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection("tutoriais").add(dados);
-        setToast({msg:"Tutorial criado!", type:"success"});
+        setToast({ msg: "Tutorial criado!", type: "success" });
       }
       setModal(null);
-    } catch(e) { setToast({msg:"Erro: "+e.message, type:"error"}); }
+    } catch (e) { setToast({ msg: "Erro: " + e.message, type: "error" }); }
   }
 
   async function excluir(id) {
     if (!confirm("Excluir este tutorial?")) return;
     try {
       await db.collection("tutoriais").doc(id).delete();
-      setToast({msg:"Excluído.", type:"success"});
+      setToast({ msg: "Excluído.", type: "success" });
       setModal(null);
-    } catch(e) { setToast({msg:"Erro ao excluir.", type:"error"}); }
+    } catch (e) { setToast({ msg: "Erro ao excluir.", type: "error" }); }
   }
+
+  function copiar(url) {
+    navigator.clipboard.writeText(url).then(() => setToast({ msg: "Link copiado!", type: "success" }));
+  }
+
+  const nAluno = todos.filter(t => t.perfil === "aluno").length;
+  const nProf  = todos.filter(t => t.perfil === "professor").length;
 
   return (
     <div>
+      {/* Stats */}
       <div className="stats-grid">
-        <div className="stat-card highlight">
-          <div className="stat-card-label">Total de tutoriais</div>
-          <div className="stat-card-value">{tutoriais.length}</div>
-          <div className="stat-card-sub">no sistema</div>
+        <div className="stat-card destaque">
+          <div className="stat-label">Total</div>
+          <div className="stat-value">{todos.length}</div>
+          <div className="stat-sub">tutoriais cadastrados</div>
         </div>
         <div className="stat-card">
-          <div className="stat-card-label">Para Alunos</div>
-          <div className="stat-card-value">{tutoriais.filter(t=>!t.publico||t.publico.includes("aluno")).length}</div>
-          <div className="stat-card-sub">tutoriais visíveis</div>
+          <div className="stat-label">🎓 Alunos</div>
+          <div className="stat-value">{nAluno}</div>
+          <div className="stat-sub">tutoriais</div>
         </div>
         <div className="stat-card">
-          <div className="stat-card-label">Para Professores</div>
-          <div className="stat-card-value">{tutoriais.filter(t=>t.publico&&t.publico.includes("professor")).length}</div>
-          <div className="stat-card-sub">tutoriais visíveis</div>
+          <div className="stat-label">👩‍🏫 Professores</div>
+          <div className="stat-value">{nProf}</div>
+          <div className="stat-sub">tutoriais</div>
         </div>
-        {CATEGORIAS.filter(c=>tutoriais.some(t=>t.categoria===c)).slice(0,3).map(c=>(
-          <div key={c} className="stat-card">
-            <div className="stat-card-label">{c}</div>
-            <div className="stat-card-value">{tutoriais.filter(t=>t.categoria===c).length}</div>
-            <div className="stat-card-sub">tutoriais</div>
+      </div>
+
+      {/* Links de compartilhamento */}
+      <div style={{ marginBottom: "1.75rem" }}>
+        <div className="sec-title" style={{ marginBottom: "0.75rem" }}>Links para compartilhar</div>
+        <div className="share-box">
+          <span style={{ fontSize: "1.1rem" }}>🎓</span>
+          <div>
+            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--azul)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.2rem" }}>Página dos Alunos</div>
+            <div className="share-box-url">{base}</div>
           </div>
+          <button className="share-copy-btn" onClick={() => copiar(base)}>Copiar</button>
+        </div>
+        <div className="share-box">
+          <span style={{ fontSize: "1.1rem" }}>👩‍🏫</span>
+          <div>
+            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--azul)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.2rem" }}>Página dos Professores</div>
+            <div className="share-box-url">{base}?prof=1</div>
+          </div>
+          <button className="share-copy-btn" onClick={() => copiar(base + "?prof=1")}>Copiar</button>
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div className="sec-header">
+        <div>
+          <div className="sec-title">Gerenciar Tutoriais</div>
+          <div className="sec-sub">Adicione, edite ou remova tutoriais de qualquer perfil</div>
+        </div>
+        <button className="btn btn-primary" onClick={() => setModal("new")}>+ Novo Tutorial</button>
+      </div>
+
+      {/* Filtros */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+        <div className="searchbar" style={{ maxWidth: "320px" }}>
+          <span className="searchbar-icon">🔍</span>
+          <input placeholder="Buscar…" value={busca} onChange={e => setBusca(e.target.value)} />
+        </div>
+        {["todos","aluno","professor"].map(p => (
+          <button key={p} className={`filter-chip${filtroPerfil === p ? " active" : ""}`} onClick={() => setFiltroPerfil(p)}>
+            {p === "todos" ? "Todos" : p === "aluno" ? "🎓 Alunos" : "👩‍🏫 Professores"}
+          </button>
         ))}
       </div>
 
-      <div className="section-header">
-        <div>
-          <div className="section-title">Gerenciar Tutoriais</div>
-          <div className="section-subtitle">Adicione, edite ou remova tutoriais por perfil</div>
-        </div>
-        <button className="btn btn-primary" onClick={()=>setModal("new")}><I.plus /> Novo Tutorial</button>
-      </div>
-
-      {/* Tabs de perfil */}
-      <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"1rem",flexWrap:"wrap"}}>
-        <div className="perfil-tabs">
-          {["aluno","professor"].map(p => (
-            <button key={p} className={`perfil-tab${tabPerfil===p?" active":""}`} onClick={()=>setTabPerfil(p)}>
-              {p.charAt(0).toUpperCase()+p.slice(1)}
-            </button>
-          ))}
-        </div>
-        <div className="top-bar-search" style={{maxWidth:320,background:"white"}}>
-          <I.search />
-          <input placeholder="Buscar…" value={busca} onChange={e=>setBusca(e.target.value)} />
-        </div>
-      </div>
-
-      <div style={{background:"white",borderRadius:14,border:"1px solid var(--gray-line)",overflow:"hidden"}}>
-        <table className="tutorial-table">
+      {/* Tabela */}
+      <div style={{ background: "white", borderRadius: "14px", border: "1px solid var(--cinza-linha)", overflow: "hidden" }}>
+        <table className="adm-table">
           <thead>
             <tr>
-              <th>Nº</th><th>Título</th><th>Categoria</th><th>Tipo</th><th>Destaque</th><th style={{textAlign:"right"}}>Ações</th>
+              <th>Nº</th><th>Título</th><th>Perfil</th><th>Categoria</th><th>Tipo</th><th style={{ textAlign:"right" }}>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {filtrados.length === 0
-              ? <tr><td colSpan={6} style={{textAlign:"center",padding:"2rem",color:"var(--gray-muted)"}}>Nenhum tutorial encontrado</td></tr>
-              : filtrados.map(t => (
-                <tr key={t.id}>
-                  <td style={{color:"var(--gray-muted)",fontSize:"0.78rem"}}>{t.numero||"—"}</td>
-                  <td className="td-title">{t.titulo}</td>
-                  <td><CatPill cat={t.categoria} /></td>
-                  <td style={{color:"var(--gray-muted)",fontSize:"0.8rem"}}>{t.tipo}</td>
-                  <td>{t.destaque ? "★" : "—"}</td>
-                  <td>
-                    <div className="td-actions" style={{justifyContent:"flex-end"}}>
-                      <button className="btn-icon" onClick={()=>setModal(t)} title="Editar"><I.edit /></button>
-                      <button className="btn-icon danger" onClick={()=>excluir(t.id)} title="Excluir"><I.trash /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            }
+            {filtrados.length === 0 ? (
+              <tr><td colSpan={6} style={{ textAlign:"center", padding:"2rem", color:"var(--cinza-muted)" }}>Nenhum tutorial encontrado</td></tr>
+            ) : filtrados.map(t => (
+              <tr key={t.id}>
+                <td style={{ color:"var(--cinza-muted)", fontSize:"0.78rem" }}>{t.numero || "—"}</td>
+                <td className="td-title">{t.titulo}</td>
+                <td><span className={`pill ${t.perfil === "professor" ? "pill-azul" : "pill-verde"}`}>{t.perfil === "professor" ? "👩‍🏫 Prof" : "🎓 Aluno"}</span></td>
+                <td><Pill cat={t.categoria} /></td>
+                <td style={{ fontSize:"0.8rem", color:"var(--cinza-muted)" }}>{TIPO_EMOJI[t.tipo]} {t.tipo}</td>
+                <td>
+                  <div className="td-actions">
+                    <button className="btn-icon" onClick={() => setModal(t)} title="Editar">✏️</button>
+                    <button className="btn-icon danger" onClick={() => excluir(t.id)} title="Excluir">🗑</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-      </div>
-
-      <div style={{marginTop:"1.25rem",background:"var(--navy-light)",border:"1px solid var(--navy-border)",borderRadius:12,padding:"0.9rem 1.1rem",fontSize:"0.82rem",color:"var(--navy-dark)"}}>
-        <strong>Links para divulgar:</strong><br/>
-        🎓 Alunos: <code style={{background:"white",padding:"2px 6px",borderRadius:4}}>{window.location.origin}{window.location.pathname}</code><br/>
-        👩‍🏫 Professores: <code style={{background:"white",padding:"2px 6px",borderRadius:4}}>{window.location.origin}{window.location.pathname}?prof=1</code>
       </div>
 
       {modal && (
         <ModalTutorial
           tutorial={modal === "new" ? null : modal}
-          onClose={()=>setModal(null)}
+          perfil={filtroPerfil === "professor" ? "professor" : "aluno"}
+          onClose={() => setModal(null)}
           onSave={salvar}
           onDelete={excluir}
         />
@@ -586,84 +723,111 @@ function ModuloGestor({ tutoriais, setToast }) {
   );
 }
 
-// ===== SIDEBAR =====
+// ===== SIDEBAR CONTENT =====
 function SidebarConteudo({ perfil, tab, setTab, onSair }) {
-  const navAluno = [{ id:"tutoriais", label:"Tutoriais", Icon:I.book }];
-  const navProf  = [{ id:"tutoriais", label:"Tutoriais", Icon:I.book }];
-  const navGestor = [
-    { id:"tutoriais-aluno", label:"Ver (Aluno)", Icon:I.book },
-    { id:"tutoriais-prof",  label:"Ver (Professor)", Icon:I.users },
-    { id:"gestor",          label:"Gerenciar", Icon:I.settings },
+  const navAluno = [
+    { id: "tutoriais", label: "Tutoriais", emoji: "📚" },
   ];
-  const nav = perfil==="gestor" ? navGestor : perfil==="professor" ? navProf : navAluno;
-  const labelPerfil = perfil==="gestor" ? "Gestor" : perfil==="professor" ? "Professor" : "Aluno";
+  const navProf = [
+    { id: "tutoriais", label: "Tutoriais", emoji: "📚" },
+  ];
+  const navGestor = [
+    { id: "tutoriais-aluno", label: "Ver — Alunos", emoji: "🎓" },
+    { id: "tutoriais-prof", label: "Ver — Professores", emoji: "👩‍🏫" },
+    { id: "gestor", label: "Gerenciar", emoji: "⚙️" },
+  ];
+
+  const nav = perfil === "gestor" ? navGestor : perfil === "professor" ? navProf : navAluno;
+  const perfilLabel = perfil === "gestor" ? "Gestor" : perfil === "professor" ? "Professor" : "Aluno";
 
   return (
     <>
       <div className="sidebar-brand">
-        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e=>e.target.style.display="none"} />
+        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:40, objectFit:"contain" }} />
+        <div className="sidebar-brand-text">
+          Tutoriais<br /><span>Centro Universo Goiânia</span>
+        </div>
       </div>
-      <div className="sidebar-perfil-badge">{labelPerfil}</div>
       <div className="sidebar-nav">
-        <div className="sidebar-section-title">Menu</div>
+        <div className="sidebar-section">Menu</div>
         {nav.map(item => (
-          <div key={item.id} className={`sidebar-item${tab===item.id?" active":""}`} onClick={()=>setTab(item.id)}>
-            <item.Icon /> {item.label}
+          <div key={item.id} className={`sidebar-item${tab === item.id ? " active" : ""}`} onClick={() => setTab(item.id)}>
+            <span className="si-icon">{item.emoji}</span> {item.label}
           </div>
         ))}
       </div>
-      {perfil==="gestor" && (
-        <div className="sidebar-footer">
-          <button className="btn-logout" onClick={onSair}>Sair da gestão</button>
-        </div>
-      )}
+      <div className="sidebar-footer">
+        <div className="sidebar-perfil-tag">{perfilLabel === "Aluno" ? "🎓" : perfilLabel === "Professor" ? "👩‍🏫" : "⚙️"} {perfilLabel}</div>
+        {perfil !== "aluno" && <button className="btn-sair" onClick={onSair}>Sair</button>}
+      </div>
     </>
   );
 }
 
 // ===== APP =====
 function App() {
-  const perfilUrl = detectarPerfil();
-  const [gestorLogado, setGestorLogado] = useState(false);
+  // Detectar perfil pela URL
+  const params = new URLSearchParams(window.location.search);
+  const urlProf = params.get("prof") === "1";
+  const urlGestor = params.get("g") === "1";
+
+  const [tela, setTela] = useState(
+    urlGestor ? "gestor-login" :
+    urlProf   ? "professor-login" :
+                "selector"
+  );
+  const [perfil, setPerfil] = useState(null); // "aluno" | "professor" | "gestor"
   const [tab, setTab] = useState("tutoriais");
   const [toast, setToast] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const { data: tutoriais, loading } = useCollection("tutoriais");
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const perfil = (perfilUrl === "gestor-login" && gestorLogado) ? "gestor"
-    : perfilUrl === "professor" ? "professor"
-    : "aluno";
+  const filtroFirebase = perfil === "gestor" ? null : perfil;
+  const { data: tutoriais, loading } = useCollection("tutoriais", filtroFirebase || "aluno");
+  const { data: todosT } = useCollection("tutoriais", "gestor");
 
-  // Se gestor-login mas não logado, mostra tela de login
-  if (perfilUrl === "gestor-login" && !gestorLogado) {
-    return <GestorLogin onLogin={() => { setGestorLogado(true); setTab("gestor"); }} />;
-  }
+  function entrar(p) { setPerfil(p); setTela("app"); setTab("tutoriais"); }
+  function sair() { setPerfil(null); setTela("selector"); setTab("tutoriais"); }
+
+  // Telas de acesso
+  if (tela === "selector") return <PerfilSelector onSelect={t => setTela(t)} />;
+  if (tela === "professor-login") return <LoginSenha perfil="professor" onSuccess={() => entrar("professor")} onBack={urlProf ? null : () => setTela("selector")} />;
+  if (tela === "gestor-login") return <LoginSenha perfil="gestor" onSuccess={() => entrar("gestor")} onBack={urlGestor ? null : () => setTela("selector")} />;
+  if (tela === "aluno-direto" || (!tela && !perfil)) { entrar("aluno"); return null; }
+
+  // Auto-entrar como aluno ao selecionar
+  if (!perfil) { entrar("aluno"); return null; }
+
+  const base = window.location.origin + window.location.pathname;
+  const shareUrl = perfil === "professor" ? base + "?prof=1" : base;
 
   const pageTitle = {
-    "tutoriais": perfil==="professor" ? "Tutoriais — Professores" : "Tutoriais — Alunos",
+    "tutoriais": perfil === "professor" ? "Tutoriais para Professores" : "Tutoriais para Alunos",
     "tutoriais-aluno": "Tutoriais — Alunos",
-    "tutoriais-prof":  "Tutoriais — Professores",
+    "tutoriais-prof": "Tutoriais — Professores",
     "gestor": "Gerenciar Tutoriais",
   }[tab] || "Tutoriais";
 
-  function renderConteudo() {
-    if (tab === "gestor" && perfil === "gestor") return <ModuloGestor tutoriais={tutoriais} setToast={setToast} />;
-    const p = tab === "tutoriais-prof" ? "professor" : tab === "tutoriais-aluno" ? "aluno" : perfil;
-    return <ModuloTutoriais tutoriais={tutoriais} perfil={p} />;
-  }
+  // Qual lista mostrar
+  const listaAtual = tab === "tutoriais-prof"
+    ? todosT.filter(t => t.perfil === "professor")
+    : tab === "tutoriais-aluno"
+    ? todosT.filter(t => t.perfil === "aluno")
+    : tutoriais;
+
+  const perfilVista = tab === "tutoriais-prof" ? "professor" : "aluno";
 
   return (
     <div className="app-layout">
       {/* Sidebar desktop */}
       <div className="sidebar-desktop">
-        <SidebarConteudo perfil={perfil} tab={tab} setTab={t=>{setTab(t);setDrawerOpen(false);}} onSair={()=>{setGestorLogado(false);}} />
+        <SidebarConteudo perfil={perfil} tab={tab} setTab={setTab} onSair={sair} />
       </div>
 
-      {/* Drawer mobile */}
-      {drawerOpen && (
-        <div className="mobile-drawer-backdrop" onClick={()=>setDrawerOpen(false)}>
-          <div className="mobile-drawer" onClick={e=>e.stopPropagation()}>
-            <SidebarConteudo perfil={perfil} tab={tab} setTab={t=>{setTab(t);setDrawerOpen(false);}} onSair={()=>{setGestorLogado(false);}} />
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="mobile-drawer-bg" onClick={() => setMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={e => e.stopPropagation()}>
+            <SidebarConteudo perfil={perfil} tab={tab} setTab={t => { setTab(t); setMenuOpen(false); }} onSair={sair} />
           </div>
         </div>
       )}
@@ -672,45 +836,60 @@ function App() {
         {/* Header mobile */}
         <div className="header-mobile">
           <div className="header-mobile-logo">
-            <button className="header-menu-btn" onClick={()=>setDrawerOpen(true)}><I.menu /></button>
-            <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e=>e.target.style.display="none"} />
+            <button className="header-menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
+            <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:26, marginLeft:8 }} />
           </div>
         </div>
 
-        {/* Top bar desktop */}
-        <div className="top-bar">
-          <div className="top-bar-title">{pageTitle}</div>
-          <div className="top-bar-search">
-            <I.search />
-            <input placeholder="Buscar tutoriais…" disabled style={{cursor:"default"}} />
+        {/* Topbar desktop */}
+        <div className="topbar">
+          <div className="topbar-title">{pageTitle}</div>
+          <div className="topbar-perfil">
+            <span className="topbar-perfil-badge">
+              {perfil === "gestor" ? "⚙️ Gestor" : perfil === "professor" ? "👩‍🏫 Professor" : "🎓 Aluno"}
+            </span>
           </div>
         </div>
 
         {/* Conteúdo */}
-        <div className="page-content">
-          {loading
-            ? <div className="spinner-wrap"><div className="spinner" /></div>
-            : renderConteudo()
-          }
+        <div className="page">
+          {loading ? (
+            <div className="spinner-wrap"><div className="spinner" /></div>
+          ) : (
+            <>
+              {(tab === "tutoriais" || tab === "tutoriais-aluno" || tab === "tutoriais-prof") && (
+                <ModuloTutoriais
+                  perfil={tab === "tutoriais-prof" ? "professor" : perfil === "professor" ? "professor" : "aluno"}
+                  tutoriais={listaAtual}
+                  shareUrl={shareUrl}
+                />
+              )}
+              {tab === "gestor" && perfil === "gestor" && (
+                <ModuloGestor todos={todosT} setToast={setToast} />
+              )}
+            </>
+          )}
         </div>
 
         {/* Nav mobile */}
         <div className="nav-mobile">
           {perfil === "gestor" ? (
             <>
-              <div className={`nav-mobile-item${tab==="tutoriais-aluno"?" active":""}`} onClick={()=>setTab("tutoriais-aluno")}><I.book />Alunos</div>
-              <div className={`nav-mobile-item${tab==="tutoriais-prof"?" active":""}`} onClick={()=>setTab("tutoriais-prof")}><I.users />Professores</div>
-              <div className={`nav-mobile-item${tab==="gestor"?" active":""}`} onClick={()=>setTab("gestor")}><I.settings />Gerir</div>
+              <div className={`nav-mobile-item${tab === "tutoriais-aluno" ? " active" : ""}`} onClick={() => setTab("tutoriais-aluno")}><span className="nav-mobile-icon">🎓</span>Alunos</div>
+              <div className={`nav-mobile-item${tab === "tutoriais-prof" ? " active" : ""}`} onClick={() => setTab("tutoriais-prof")}><span className="nav-mobile-icon">👩‍🏫</span>Profs</div>
+              <div className={`nav-mobile-item${tab === "gestor" ? " active" : ""}`} onClick={() => setTab("gestor")}><span className="nav-mobile-icon">⚙️</span>Gestão</div>
             </>
           ) : (
-            <div className={`nav-mobile-item active`}><I.book />Tutoriais</div>
+            <div className={`nav-mobile-item active`}><span className="nav-mobile-icon">📚</span>Tutoriais</div>
           )}
         </div>
       </div>
 
-      {toast && <Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)} />}
+      {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+// ===== RENDER =====
+const root = ReactDOM.createRoot(document.getElementById("app"));
+root.render(<App />);
