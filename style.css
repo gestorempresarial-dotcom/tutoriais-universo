@@ -41,7 +41,7 @@ a { text-decoration: none; color: inherit; }
   padding: 2rem 1rem;
 }
 .perfil-logo { margin-bottom: 2rem; text-align: center; }
-.perfil-logo img { height: 72px; width: auto; max-width: 220px; object-fit: contain; }
+.perfil-logo img { height: 110px; width: auto; object-fit: contain; }
 .perfil-titulo { font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 0.4rem; text-align: center; letter-spacing: -0.02em; }
 .perfil-sub { color: rgba(255,255,255,0.6); font-size: 0.9rem; text-align: center; margin-bottom: 2.5rem; }
 .perfil-cards { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; }
@@ -99,9 +99,9 @@ a { text-decoration: none; color: inherit; }
 }
 .sidebar-brand {
   padding: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.12);
-  display: flex; align-items: center; gap: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
 }
-.sidebar-brand img { height: 32px; width: auto; max-width: 140px; object-fit: contain; flex-shrink: 0; }
+.sidebar-brand img { height: 56px; width: auto; object-fit: contain; }
 .sidebar-brand-text { font-size: 0.78rem; font-weight: 700; line-height: 1.4; color: white; }
 .sidebar-brand-text span { font-weight: 400; opacity: 0.6; font-size: 0.7rem; display: block; }
 .sidebar-nav { flex: 1; padding: 0.75rem 0; }

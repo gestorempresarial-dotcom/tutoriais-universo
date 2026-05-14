@@ -206,7 +206,7 @@ function PerfilSelector({ onSelect }) {
   return (
     <div className="perfil-page">
       <div className="perfil-logo">
-        <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
+        <img src="logo-escud.png" alt="UNIVERSO" onError={e => e.target.style.display="none"} />
       </div>
       <div className="perfil-titulo">Portal de Tutoriais</div>
       <div className="perfil-sub">Centro Universitário UNIVERSO Goiânia</div>
@@ -247,7 +247,7 @@ function LoginSenha({ perfil, onSuccess, onBack }) {
     <div className="login-page">
       <div className="login-card">
         <div className="login-card-logo">
-          <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
+          <img src="logo-escud.png" alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:72, width:"auto", objectFit:"contain" }} />
         </div>
         <div className="login-card-title">{l.titulo}</div>
         <div className="login-card-sub">{l.sub}</div>
@@ -401,7 +401,7 @@ function ModuloTutoriais({ perfil, tutoriais, shareUrl }) {
       {/* Banner */}
       <div className="hero-banner">
         <div className="hero-banner-logo">
-          <img src={LOGO_COMPLETO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:48, width:"auto", maxWidth:200, objectFit:"contain" }} />
+          <img src="logo-complet.png" alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:52, width:"auto", maxWidth:220, objectFit:"contain" }} />
         </div>
         <div className="hero-banner-text">
           <h2>{heroBanner.titulo}</h2>
@@ -733,10 +733,7 @@ function SidebarConteudo({ perfil, tab, setTab, onSair }) {
   return (
     <>
       <div className="sidebar-brand">
-        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:32, width:"auto", maxWidth:140, objectFit:"contain", flexShrink:0 }} />
-        <div className="sidebar-brand-text">
-          Tutoriais<br /><span>Centro Universo Goiânia</span>
-        </div>
+        <img src="logo-escud.png" alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:56, width:"auto", objectFit:"contain" }} />
       </div>
       <div className="sidebar-nav">
         <div className="sidebar-section">Menu</div>
