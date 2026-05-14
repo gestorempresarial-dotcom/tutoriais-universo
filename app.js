@@ -7,14 +7,13 @@
 const { useState, useEffect, useRef, useCallback } = React;
 
 // ===== FIREBASE CONFIG =====
-// ⚠️ SUBSTITUIR com suas credenciais do Firebase Console
 const firebaseConfig = {
-  apiKey: "COLE_SUA_API_KEY_AQUI",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyDdAvltRFKAD3B0lHh9M77ACqP0HRlSPDM",
+  authDomain: "tutorialuniverso.firebaseapp.com",
+  projectId: "tutorialuniverso",
+  storageBucket: "tutorialuniverso.firebasestorage.app",
+  messagingSenderId: "813300235784",
+  appId: "1:813300235784:web:c001f9fa7285c7cc369bbd"
 };
 
 firebase.initializeApp(firebaseConfig);
