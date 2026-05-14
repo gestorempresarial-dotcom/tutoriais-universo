@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Popular Firebase — Tutoriais UNIVERSO</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: system-ui; background: #1B2D6B; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { background: white; color: #1B2D6B; border-radius: 16px; padding: 2rem; max-width: 500px; width: 100%; text-align: center; }
+    h2 { margin-bottom: 0.5rem; }
+    p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    button { background: #1B2D6B; color: white; border: none; padding: 0.85rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; }
+    button:hover { background: #2A3F8F; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    .log { margin-top: 1rem; text-align: left; font-size: 0.8rem; background: #F4F6FA; border-radius: 8px; padding: 1rem; max-height: 200px; overflow-y: auto; color: #333; }
+    .ok { color: #166534; } .err { color: #DC2626; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <img src="logo-escud.png" style="height:70px;margin-bottom:1rem" />
+  <h2>Popular Tutoriais</h2>
+  <p>Clique no botão para criar os tutoriais iniciais no Firebase.<br>Execute apenas uma vez!</p>
+  <button id="btn" onclick="popular()">🚀 Criar Tutoriais no Firebase</button>
+  <div class="log" id="log">Aguardando...</div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDdAvltRFKAD3B0lHh9M77ACqP0HRlSPDM",
+  authDomain: "tutorialuniverso.firebaseapp.com",
+  projectId: "tutorialuniverso",
+  storageBucket: "tutorialuniverso.firebasestorage.app",
+  messagingSenderId: "813300235784",
+  appId: "1:813300235784:web:c001f9fa7285c7cc369bbd"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const TUTORIAIS = [
+  // ===== ALUNOS =====
+  {
+    numero: "01", perfil: "aluno", categoria: "Matrícula",
+    titulo: "Manual do Aluno — MIA 2026.1",
+    descricao: "Guia completo com todas as informações essenciais para o semestre 2026.1: matrícula, frequência, avaliações, biblioteca, direitos e deveres.",
+    tipo: "PDF",
+    url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf",
+    imagem: "", destaque: true,
+    passos: [
+      "Abra o PDF pelo botão abaixo — ele abre direto no navegador",
+      "Use o sumário nas primeiras páginas para navegar pelos temas",
+      "Salve ou baixe o PDF para consultar quando precisar",
+      "Dúvidas? Procure a Secretaria Acadêmica ou fale pelo WhatsApp institucional"
+    ],
+    tags: ["MIA", "manual", "matrícula", "2026", "calouro"]
+  },
+  {
+    numero: "02", perfil: "aluno", categoria: "Matrícula",
+    titulo: "Como Confirmar a Matrícula",
+    descricao: "Passo a passo para confirmar sua matrícula no Portal do Aluno. Obrigatório no início de cada semestre.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse portal.universo.edu.br com seu CPF e senha",
+      "Clique em 'Matrícula' no menu lateral esquerdo",
+      "Verifique as disciplinas listadas para o semestre",
+      "Clique em 'Confirmar Matrícula' e aguarde a mensagem de sucesso",
+      "Imprima ou salve o comprovante gerado — guarde bem!"
+    ],
+    tags: ["matrícula", "portal", "confirmação", "semestre"]
+  },
+  {
+    numero: "03", perfil: "aluno", categoria: "Matrícula",
+    titulo: "Renovação de Matrícula",
+    descricao: "Como renovar sua matrícula para o próximo semestre pelo portal. Fique atento ao prazo no calendário acadêmico.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o Portal do Aluno dentro do prazo do calendário acadêmico",
+      "Selecione as disciplinas para o próximo período",
+      "Verifique pré-requisitos antes de selecionar",
+      "Confirme a renovação e imprima o comprovante"
+    ],
+    tags: ["renovação", "matrícula", "portal", "semestre"]
+  },
+  {
+    numero: "04", perfil: "aluno", categoria: "Matrícula",
+    titulo: "Segunda Chamada de Matrícula",
+    descricao: "Perdeu o prazo de matrícula? Veja como solicitar a segunda chamada e quais documentos são necessários.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Fique atento ao calendário acadêmico para as datas de segunda chamada",
+      "Compareça à Secretaria Acadêmica com RG e documentos exigidos",
+      "Realize o pagamento da taxa de segunda chamada conforme orientação",
+      "Aguarde confirmação e verifique no portal se a matrícula foi efetivada"
+    ],
+    tags: ["segunda chamada", "matrícula", "secretaria"]
+  },
+  {
+    numero: "05", perfil: "aluno", categoria: "AVA / EAD",
+    titulo: "Como Acessar o AVA",
+    descricao: "Passo a passo para fazer login no Ambiente Virtual de Aprendizagem e encontrar suas disciplinas online.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse ava.universo.edu.br pelo navegador (Chrome ou Firefox recomendados)",
+      "Use o e-mail institucional @universo.edu.br como usuário",
+      "Na primeira entrada, sua senha provisória é seu CPF (somente números)",
+      "Altere a senha imediatamente após o primeiro acesso — é obrigatório",
+      "Clique em 'Meus Cursos' para ver suas disciplinas do semestre"
+    ],
+    tags: ["AVA", "EAD", "online", "acesso", "login"]
+  },
+  {
+    numero: "06", perfil: "aluno", categoria: "AVA / EAD",
+    titulo: "Ambiente AVA 100% Online — Como Funciona",
+    descricao: "Para alunos de cursos EAD: entenda como funciona a rotina de estudos, prazos de atividades e provas presenciais.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Todas as aulas ficam disponíveis no AVA semanalmente",
+      "Acesse o cronograma da disciplina para ver os prazos das atividades",
+      "As avaliações online têm data e hora limite — não deixe para a última hora",
+      "Provas presenciais acontecem nos polos — verifique o endereço com antecedência",
+      "Dúvidas com o conteúdo? Use o fórum da disciplina para contato com o professor"
+    ],
+    tags: ["EAD", "online", "atividades", "provas", "polo"]
+  },
+  {
+    numero: "07", perfil: "aluno", categoria: "Financeiro",
+    titulo: "Como Pagar a Mensalidade",
+    descricao: "Formas de pagamento disponíveis, onde encontrar o boleto e o que fazer em caso de atraso.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o Portal do Aluno e clique em 'Financeiro'",
+      "Localize o boleto do mês atual e clique em 'Gerar Boleto'",
+      "Pague via internet banking, app bancário ou lotérica até a data de vencimento",
+      "Em caso de atraso, o boleto é atualizado automaticamente — não use boleto vencido",
+      "Para negociação de dívidas, vá ao setor financeiro da instituição"
+    ],
+    tags: ["mensalidade", "boleto", "pagamento", "financeiro"]
+  },
+  {
+    numero: "08", perfil: "aluno", categoria: "Financeiro",
+    titulo: "Trocas de Bolsas e Financiamentos",
+    descricao: "Entenda como funciona o FIES, ProUni, bolsas institucionais e como solicitar ou renovar o benefício.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o setor de bolsas e financiamentos da UNIVERSO",
+      "Verifique os requisitos de cada modalidade (FIES, ProUni, bolsa institucional)",
+      "Mantenha o Imposto de Renda em dia — é exigido para FIES e ProUni",
+      "Renove seu benefício dentro do prazo indicado pela instituição",
+      "Dúvidas? Procure o setor financeiro ou acesse universo.edu.br"
+    ],
+    tags: ["FIES", "ProUni", "bolsa", "financiamento", "benefício"]
+  },
+  {
+    numero: "09", perfil: "aluno", categoria: "Secretaria",
+    titulo: "Como Entregar Atestado Médico",
+    descricao: "Procedimento correto para protocolar atestados e abonar faltas. Prazo: 72h após a falta.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "O atestado deve ser entregue em até 72 horas após a(s) falta(s)",
+      "Dirija-se à Secretaria Acadêmica com RG e atestado original",
+      "Solicite o comprovante de protocolo — guarde sempre",
+      "O abono de falta não substitui atividades avaliativas perdidas",
+      "Para internações longas, verifique com a coordenação sobre regime especial"
+    ],
+    tags: ["atestado", "falta", "secretaria", "abono", "médico"]
+  },
+  {
+    numero: "10", perfil: "aluno", categoria: "Secretaria",
+    titulo: "Secretaria Online — O que Posso Resolver",
+    descricao: "Saiba quais serviços da secretaria estão disponíveis online e como acessar pelo portal.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o Portal do Aluno em portal.universo.edu.br",
+      "Clique em 'Requerimentos' para solicitar documentos online",
+      "Histórico escolar, declarações e atestados de matrícula ficam prontos em até 48h",
+      "Acompanhe o status do seu pedido pelo portal",
+      "Para documentos urgentes, compareça presencialmente à Secretaria"
+    ],
+    tags: ["secretaria", "online", "requerimento", "documentos", "histórico"]
+  },
+  {
+    numero: "11", perfil: "aluno", categoria: "Calendário",
+    titulo: "Calendário Acadêmico 2026.1",
+    descricao: "Datas importantes do semestre: início das aulas, avaliações, recesso, colação de grau e prazos de matrícula.",
+    tipo: "Link",
+    url: "https://universo.edu.br/",
+    imagem: "", destaque: false,
+    passos: [
+      "Acesse o link abaixo para ver o calendário completo no site da UNIVERSO",
+      "Salve as datas das avaliações no seu celular ou agenda",
+      "Fique atento aos prazos de matrícula e renovação",
+      "O calendário pode ter ajustes — verifique periodicamente"
+    ],
+    tags: ["calendário", "datas", "avaliação", "semestre", "2026"]
+  },
+  {
+    numero: "12", perfil: "aluno", categoria: "Estágio / TCC",
+    titulo: "Como Iniciar o Estágio",
+    descricao: "Requisitos, documentação necessária e passo a passo para formalizar seu estágio obrigatório ou não-obrigatório.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Verifique com sua coordenação a carga horária mínima exigida",
+      "Encontre uma empresa ou instituição parceira — o setor de estágios pode ajudar",
+      "Solicite o Termo de Compromisso de Estágio na Secretaria",
+      "Após assinatura de todas as partes, entregue uma via na Secretaria",
+      "Mantenha o relatório de atividades atualizado — será exigido ao final"
+    ],
+    tags: ["estágio", "TCC", "documentos", "empresa", "obrigatório"]
+  },
+  {
+    numero: "13", perfil: "aluno", categoria: "Bolsas",
+    titulo: "Exame de Bolsa — Como Funciona",
+    descricao: "Entenda o processo seletivo para bolsas institucionais da UNIVERSO: inscrição, prova e resultado.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Fique atento aos editais publicados no site da UNIVERSO",
+      "Faça sua inscrição dentro do prazo — normalmente online pelo portal",
+      "Estude português, matemática e conhecimentos gerais para a prova",
+      "O resultado é divulgado pelo portal e no site da instituição",
+      "Se aprovado, compareça dentro do prazo para formalizar a bolsa"
+    ],
+    tags: ["bolsa", "exame", "seleção", "desconto", "edital"]
+  },
+  // ===== PROFESSORES =====
+  {
+    numero: "P01", perfil: "professor", categoria: "Lançamento de Notas",
+    titulo: "Como Lançar Notas no Portal",
+    descricao: "Passo a passo para lançar as notas das avaliações no sistema acadêmico dentro do prazo.",
+    tipo: "Texto", url: "", imagem: "", destaque: true,
+    passos: [
+      "Acesse o Portal do Professor em portal.universo.edu.br",
+      "Clique em 'Diário de Classe' no menu lateral",
+      "Selecione a disciplina e a turma desejada",
+      "Clique em 'Lançar Notas' e preencha os campos de cada aluno",
+      "Salve e confirme — respeite o prazo do calendário acadêmico"
+    ],
+    tags: ["notas", "diário", "portal", "avaliação", "turma"]
+  },
+  {
+    numero: "P02", perfil: "professor", categoria: "Frequência",
+    titulo: "Como Registrar Frequência",
+    descricao: "Como lançar a presença dos alunos no diário de classe online.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o Portal do Professor e abra o 'Diário de Classe'",
+      "Selecione a disciplina, turma e a data da aula",
+      "Marque as presenças e faltas de cada aluno",
+      "Salve antes de sair da página — não há salvamento automático",
+      "O sistema bloqueia o lançamento após o prazo limite"
+    ],
+    tags: ["frequência", "presença", "diário", "falta", "turma"]
+  },
+  {
+    numero: "P03", perfil: "professor", categoria: "AVA / EAD",
+    titulo: "Como Publicar Conteúdo no AVA",
+    descricao: "Como disponibilizar materiais, atividades e avaliações para os alunos no Ambiente Virtual.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse ava.universo.edu.br com seu login institucional",
+      "Selecione a disciplina desejada no painel",
+      "Clique em 'Ativar edição' para liberar as ferramentas de conteúdo",
+      "Use 'Adicionar atividade ou recurso' para inserir arquivos, fóruns ou questionários",
+      "Defina a data de disponibilidade e salve as configurações"
+    ],
+    tags: ["AVA", "EAD", "material", "atividade", "publicar"]
+  },
+  {
+    numero: "P04", perfil: "professor", categoria: "Plano de Ensino",
+    titulo: "Como Cadastrar o Plano de Ensino",
+    descricao: "Procedimento para elaborar e cadastrar o plano de ensino no sistema acadêmico dentro do prazo.",
+    tipo: "Texto", url: "", imagem: "", destaque: false,
+    passos: [
+      "Acesse o Portal do Professor e clique em 'Plano de Ensino'",
+      "Selecione a disciplina e o semestre vigente",
+      "Preencha: ementa, objetivos, conteúdo programático, metodologia e avaliação",
+      "Revise e clique em 'Enviar para aprovação'",
+      "Acompanhe o status pelo portal — prazo definido pela coordenação"
+    ],
+    tags: ["plano de ensino", "ementa", "portal", "disciplina", "coordenação"]
+  },
+];
+
+async function popular() {
+  const btn = document.getElementById("btn");
+  const log = document.getElementById("log");
+  btn.disabled = true;
+  btn.textContent = "⏳ Criando tutoriais...";
+  log.innerHTML = "";
+
+  let ok = 0, erro = 0;
+  for (const t of TUTORIAIS) {
+    try {
+      await db.collection("tutoriais").add({
+        ...t,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      ok++;
+      log.innerHTML += `<div class="ok">✓ ${t.numero} — ${t.titulo}</div>`;
+      log.scrollTop = log.scrollHeight;
+    } catch(e) {
+      erro++;
+      log.innerHTML += `<div class="err">✗ ${t.titulo}: ${e.message}</div>`;
+    }
+  }
+
+  btn.textContent = `✅ Concluído! ${ok} criados${erro ? `, ${erro} erros` : ""}`;
+  log.innerHTML += `<div style="margin-top:0.5rem;font-weight:700;color:#1B2D6B">
+    Pronto! Feche esta página e acesse o sistema.
+  </div>`;
+}
+</script>
+</body>
+</html>
