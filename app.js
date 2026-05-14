@@ -213,10 +213,8 @@ function ModuloTutoriais({perfil, tutoriais, avisos}) {
       <FaixaAvisos avisos={avisos}/>
       <div className="hero-banner">
         <div className="hero-banner-logo">
-          <img src="logo-complet.png" alt="UNIVERSO"
-            onError={e=>e.target.style.display="none"}
-            style={{height:64,width:"auto",maxWidth:240,objectFit:"contain"}}
-          />
+          <img src="logo-complet.png" alt="UNIVERSO" onError={e=>e.target.style.display="none"}
+            style={{height:70,width:"auto",maxWidth:260,objectFit:"contain"}}/>
         </div>
         <div className="hero-banner-text">
           <h2>{perfil==="professor"?"Tutoriais para Professores":"Tutoriais para Alunos"}</h2>

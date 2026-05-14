@@ -160,7 +160,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== HERO BANNER ===== */
 .hero-banner {
-  background: var(--azul); border-radius: 16px; padding: 1.75rem 2rem;
+  background: var(--azul); border-radius: 16px; padding: 1.5rem 2rem;
   margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem;
   position: relative; overflow: hidden;
 }
@@ -169,7 +169,8 @@ a { text-decoration: none; color: inherit; }
   width: 200px; height: 200px; border-radius: 50%;
   background: rgba(255,255,255,0.05);
 }
-.hero-banner-logo img { height: 56px; object-fit: contain; flex-shrink: 0; }
+.hero-banner-logo { flex-shrink: 0; }
+.hero-banner-logo img { height: 70px; width: auto; max-width: 260px; object-fit: contain; display: block; }
 .hero-banner-text h2 { font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 0.25rem; }
 .hero-banner-text p { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
 .hero-share-btn {
