@@ -22,9 +22,10 @@ const SENHA_PROF   = "profuniverso2025";
 const SENHA_GESTOR = "gestoruniverso2025";
 
 // ===== LOGOS =====
-const LOGO_TEXTO    = "logo-texto.png";
-const LOGO_ESCUDO   = "logo-escud.png";
-const LOGO_COMPLETO = "logo-complet.png";
+// Escudo = entrada/login/mobile | Texto = sidebar | Completo = banner/relatórios
+const LOGO_TEXTO    = "logo-escud.png";    // login, entrada, mobile
+const LOGO_ESCUDO   = "logo-texto.png";    // sidebar lateral
+const LOGO_COMPLETO = "logo-complet.png";  // banner e relatórios
 
 // ===== CATEGORIAS =====
 const CATS_ALUNO = ["Matrícula", "Financeiro", "AVA / EAD", "Secretaria", "Calendário", "Estágio / TCC", "Bolsas", "Outros"];
@@ -201,17 +202,6 @@ const TIPO_EMOJI = { "PDF": "📄", "Vídeo": "🎬", "Link": "🔗", "Imagem": 
 
 // ===== PERFIL SELECTOR =====
 function PerfilSelector({ onSelect }) {
-  const params = new URLSearchParams(window.location.search);
-  const isProf = params.get("prof") === "1";
-  const isGestor = params.get("g") === "1";
-
-  // Auto-redirecionar se veio por link direto
-  useEffect(() => {
-    if (isProf) onSelect("professor-login");
-    if (isGestor) onSelect("gestor-login");
-  }, []);
-
-  if (isProf || isGestor) return <div className="spinner-wrap"><div className="spinner" /></div>;
 
   return (
     <div className="perfil-page">
@@ -411,7 +401,7 @@ function ModuloTutoriais({ perfil, tutoriais, shareUrl }) {
       {/* Banner */}
       <div className="hero-banner">
         <div className="hero-banner-logo">
-          <img src={LOGO_COMPLETO} alt="UNIVERSO" onError={e => e.target.style.display="none"} />
+          <img src={LOGO_COMPLETO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:48, width:"auto", maxWidth:200, objectFit:"contain" }} />
         </div>
         <div className="hero-banner-text">
           <h2>{heroBanner.titulo}</h2>
@@ -743,7 +733,7 @@ function SidebarConteudo({ perfil, tab, setTab, onSair }) {
   return (
     <>
       <div className="sidebar-brand">
-        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:40, objectFit:"contain" }} />
+        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:32, width:"auto", maxWidth:140, objectFit:"contain", flexShrink:0 }} />
         <div className="sidebar-brand-text">
           Tutoriais<br /><span>Centro Universo Goiânia</span>
         </div>
@@ -837,7 +827,7 @@ function App() {
         <div className="header-mobile">
           <div className="header-mobile-logo">
             <button className="header-menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
-            <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:26, marginLeft:8 }} />
+            <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display="none"} style={{ height:30, width:"auto", maxWidth:120, marginLeft:8, objectFit:"contain" }} />
           </div>
         </div>
 
