@@ -210,6 +210,7 @@ function PerfilSelector({ onSelect }) {
       </div>
       <div className="perfil-titulo">Portal de Tutoriais</div>
       <div className="perfil-sub">Centro Universitário UNIVERSO Goiânia</div>
+
       <div className="perfil-cards">
         <div className="perfil-card" onClick={() => onSelect("aluno")}>
           <div className="perfil-card-icon">🎓</div>
@@ -221,6 +222,19 @@ function PerfilSelector({ onSelect }) {
           <div className="perfil-card-label">Sou Professor</div>
           <div className="perfil-card-desc">Área exclusiva docente</div>
         </div>
+      </div>
+
+      {/* Links de acesso rápido */}
+      <div className="perfil-links">
+        <a href="https://universo.edu.br/" target="_blank" rel="noopener noreferrer" className="perfil-link-btn">
+          🌐 Site UNIVERSO
+        </a>
+        <a href="https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf" target="_blank" rel="noopener noreferrer" className="perfil-link-btn">
+          📘 Manual do Aluno — MIA 2026.1
+        </a>
+        <a href="https://api.whatsapp.com/send?phone=+5508007210251" target="_blank" rel="noopener noreferrer" className="perfil-link-btn whatsapp">
+          📱 WhatsApp Institucional
+        </a>
       </div>
     </div>
   );

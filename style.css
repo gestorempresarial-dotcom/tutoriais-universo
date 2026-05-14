@@ -40,20 +40,33 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   padding: 2rem 1rem;
 }
-.perfil-logo { margin-bottom: 2rem; text-align: center; }
-.perfil-logo img { height: 110px; width: auto; object-fit: contain; }
+.perfil-logo { margin-bottom: 1.5rem; text-align: center; }
+.perfil-logo img { height: 130px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.25)); }
 .perfil-titulo { font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 0.4rem; text-align: center; letter-spacing: -0.02em; }
-.perfil-sub { color: rgba(255,255,255,0.6); font-size: 0.9rem; text-align: center; margin-bottom: 2.5rem; }
-.perfil-cards { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; }
+.perfil-sub { color: rgba(255,255,255,0.6); font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+.perfil-cards { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem; }
 .perfil-card {
-  background: white; border-radius: 16px; padding: 2rem 2.5rem;
+  background: white; border-radius: 16px; padding: 1.75rem 2.25rem;
   text-align: center; cursor: pointer; transition: all 0.2s;
   min-width: 160px; border: 2px solid transparent;
 }
-.perfil-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); border-color: var(--azul-border); }
-.perfil-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.perfil-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.4); }
+.perfil-card-icon { font-size: 2.2rem; margin-bottom: 0.6rem; }
 .perfil-card-label { font-size: 1rem; font-weight: 700; color: var(--azul); }
 .perfil-card-desc { font-size: 0.78rem; color: var(--cinza-muted); margin-top: 0.3rem; }
+
+/* Links de acesso rápido */
+.perfil-links { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 380px; }
+.perfil-link-btn {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.7rem 1.1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9);
+  font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.18);
+  transition: all 0.2s;
+}
+.perfil-link-btn:hover { background: rgba(255,255,255,0.2); color: white; transform: translateX(3px); }
+.perfil-link-btn.whatsapp { background: rgba(37,211,102,0.15); border-color: rgba(37,211,102,0.35); color: #7FE8A8; }
+.perfil-link-btn.whatsapp:hover { background: rgba(37,211,102,0.25); color: #A8F0C0; }
 
 /* ===== LOGIN SENHA (professor/gestor) ===== */
 .login-page {
