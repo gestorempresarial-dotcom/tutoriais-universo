@@ -6,278 +6,400 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: system-ui; background: #1B2D6B; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    .card { background: white; color: #1B2D6B; border-radius: 16px; padding: 2rem; max-width: 500px; width: 100%; text-align: center; }
-    h2 { margin-bottom: 0.5rem; }
-    p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    body { font-family: system-ui; background: #1B2D6B; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1rem; }
+    .card { background: white; color: #1B2D6B; border-radius: 16px; padding: 2rem; max-width: 560px; width: 100%; text-align: center; }
+    h2 { margin-bottom: 0.5rem; font-size: 1.2rem; }
+    p { color: #666; font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5; }
+    .aviso { background: #FFF8E1; border: 1px solid #F5A623; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #92400E; margin-bottom: 1.25rem; text-align: left; }
     button { background: #1B2D6B; color: white; border: none; padding: 0.85rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; }
     button:hover { background: #2A3F8F; }
     button:disabled { background: #aaa; cursor: not-allowed; }
-    .log { margin-top: 1rem; text-align: left; font-size: 0.8rem; background: #F4F6FA; border-radius: 8px; padding: 1rem; max-height: 200px; overflow-y: auto; color: #333; }
-    .ok { color: #166534; } .err { color: #DC2626; }
+    .log { margin-top: 1rem; text-align: left; font-size: 0.78rem; background: #F4F6FA; border-radius: 8px; padding: 1rem; max-height: 260px; overflow-y: auto; color: #333; line-height: 1.6; }
+    .ok { color: #166534; } .err { color: #DC2626; } .info { color: #1B2D6B; font-weight: 600; }
   </style>
 </head>
 <body>
 <div class="card">
-  <img src="logo-escud.png" style="height:70px;margin-bottom:1rem" />
-  <h2>Popular Tutoriais</h2>
-  <p>Clique no botão para criar os tutoriais iniciais no Firebase.<br>Execute apenas uma vez!</p>
+  <img src="logo-escud.png" style="height:60px;margin-bottom:1rem" onerror="this.style.display='none'" />
+  <h2>Popular Tutoriais — UNIVERSO Goiânia</h2>
+  <div class="aviso">
+    ⚠️ <strong>Atenção:</strong> Execute apenas uma vez. Todos os tutoriais abaixo foram elaborados com base no <strong>MIA 2026.1</strong> e no <strong>Tutorial 02 oficial (Confirmação de Matrícula)</strong>. Exclua este arquivo do repositório após usar.
+  </div>
+  <p>Clique no botão para criar os tutoriais oficiais no Firebase.</p>
   <button id="btn" onclick="popular()">🚀 Criar Tutoriais no Firebase</button>
   <div class="log" id="log">Aguardando...</div>
 </div>
 
 <script>
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyDdAvltRFKAD3B0lHh9M77ACqP0HRlSPDM",
   authDomain: "tutorialuniverso.firebaseapp.com",
   projectId: "tutorialuniverso",
   storageBucket: "tutorialuniverso.firebasestorage.app",
   messagingSenderId: "813300235784",
   appId: "1:813300235784:web:c001f9fa7285c7cc369bbd"
-};
-firebase.initializeApp(firebaseConfig);
+});
 const db = firebase.firestore();
 
+// ============================================================
+// TUTORIAIS BASEADOS NO MIA 2026.1 E TUTORIAL 02 OFICIAL
+// Fonte: Manual Informativo do Aluno 2026.1 — UNIVERSO Goiânia
+//        Tutorial 02 — Confirmação de Matrícula Calouros
+// ============================================================
 const TUTORIAIS = [
-  // ===== ALUNOS =====
+
+  // ===== MATRÍCULA =====
   {
-    numero: "01", perfil: "aluno", categoria: "Matrícula",
+    numero: "01", perfil: "aluno", categoria: "Matrícula", prioridade: 1,
     titulo: "Manual do Aluno — MIA 2026.1",
-    descricao: "Guia completo com todas as informações essenciais para o semestre 2026.1: matrícula, frequência, avaliações, biblioteca, direitos e deveres.",
+    descricao: "Manual Informativo do Aluno completo para o 1º semestre de 2026. Contém todas as normas, direitos, deveres e procedimentos da instituição.",
     tipo: "PDF",
     url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf",
     imagem: "", destaque: true,
     passos: [
-      "Abra o PDF pelo botão abaixo — ele abre direto no navegador",
-      "Use o sumário nas primeiras páginas para navegar pelos temas",
-      "Salve ou baixe o PDF para consultar quando precisar",
-      "Dúvidas? Procure a Secretaria Acadêmica ou fale pelo WhatsApp institucional"
+      {texto: "Abra o PDF clicando no botão abaixo — ele abre diretamente no navegador", imagem: ""},
+      {texto: "Use o sumário nas primeiras páginas para navegar pelos temas de seu interesse", imagem: ""},
+      {texto: "Salve ou baixe o PDF para consultar quando precisar durante o semestre", imagem: ""},
+      {texto: "Em caso de dúvidas, procure a Secretaria Acadêmica ou acesse o site universo.edu.br", imagem: ""},
     ],
-    tags: ["MIA", "manual", "matrícula", "2026", "calouro"]
+    links: [
+      {emoji: "📥", titulo: "Baixar MIA 2026.1", url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf", descricao: "Manual Informativo do Aluno — 1º Semestre 2026"},
+      {emoji: "🌐", titulo: "Site UNIVERSO", url: "https://universo.edu.br/", descricao: ""},
+    ],
+    tags: ["MIA", "manual", "matrícula", "2026", "calouro", "normas"]
   },
+
   {
-    numero: "02", perfil: "aluno", categoria: "Matrícula",
-    titulo: "Como Confirmar a Matrícula",
-    descricao: "Passo a passo para confirmar sua matrícula no Portal do Aluno. Obrigatório no início de cada semestre.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "02", perfil: "aluno", categoria: "Matrícula", prioridade: 2,
+    titulo: "Confirmação de Matrícula — Calouros",
+    descricao: "Passo a passo oficial para confirmar sua matrícula no sistema ASOEC. Inclui como acessar o Espaço do Aluno, validar o token e assinar o contrato.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: true,
     passos: [
-      "Acesse portal.universo.edu.br com seu CPF e senha",
-      "Clique em 'Matrícula' no menu lateral esquerdo",
-      "Verifique as disciplinas listadas para o semestre",
-      "Clique em 'Confirmar Matrícula' e aguarde a mensagem de sucesso",
-      "Imprima ou salve o comprovante gerado — guarde bem!"
+      {texto: "Acesse o sistema pelo site: sistema.asoec.com.br — este é o Espaço do Aluno da UNIVERSO, onde você terá acesso à sua vida acadêmica e financeira", imagem: ""},
+      {texto: "Na tela de login, informe seu Código Pessoa e senha. Esqueceu a senha? Clique em 'Esqueci meus dados de acesso' e informe seu CPF — o código de recuperação será enviado por SMS ou e-mail", imagem: ""},
+      {texto: "O sistema utiliza autenticação por token (Google Authenticator). Se ainda não tiver o app, baixe-o gratuitamente na App Store (iPhone) ou Google Play (Android) e siga as instruções para cadastrar o token", imagem: ""},
+      {texto: "Após entrar no sistema, clique em 'Matrícula Online' no menu lateral esquerdo", imagem: ""},
+      {texto: "Selecione o seu curso na lista e clique em avançar", imagem: ""},
+      {texto: "Siga o fluxo completo: Seleção de curso → Dados pessoais → Envio de documentos → Contrato de matrícula. Assine o contrato digitalmente para concluir", imagem: ""},
     ],
-    tags: ["matrícula", "portal", "confirmação", "semestre"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar sistema.asoec.com.br", url: "https://sistema.asoec.com.br", descricao: "Espaço do Aluno — portal acadêmico e financeiro"},
+      {emoji: "📱", titulo: "Google Authenticator — Android", url: "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2", descricao: "Baixar token no Google Play"},
+      {emoji: "📱", titulo: "Google Authenticator — iPhone", url: "https://apps.apple.com/br/app/google-authenticator/id388497605", descricao: "Baixar token na App Store"},
+    ],
+    tags: ["matrícula", "ASOEC", "calouro", "contrato", "token", "confirmação"]
   },
+
   {
-    numero: "03", perfil: "aluno", categoria: "Matrícula",
+    numero: "03", perfil: "aluno", categoria: "Matrícula", prioridade: 3,
     titulo: "Renovação de Matrícula",
-    descricao: "Como renovar sua matrícula para o próximo semestre pelo portal. Fique atento ao prazo no calendário acadêmico.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    descricao: "Como renovar sua matrícula para o próximo semestre. Conforme o MIA, a renovação é obrigatória e deve ser feita dentro do prazo do calendário acadêmico.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Aluno dentro do prazo do calendário acadêmico",
-      "Selecione as disciplinas para o próximo período",
-      "Verifique pré-requisitos antes de selecionar",
-      "Confirme a renovação e imprima o comprovante"
+      {texto: "Fique atento ao calendário acadêmico publicado no site da UNIVERSO — ele contém as datas de renovação de matrícula", imagem: ""},
+      {texto: "Acesse sistema.asoec.com.br com seu CPF/código e token", imagem: ""},
+      {texto: "Clique em 'Matrícula Online' no menu lateral", imagem: ""},
+      {texto: "Selecione as disciplinas para o próximo semestre — atenção aos pré-requisitos de cada disciplina", imagem: ""},
+      {texto: "Confirme a renovação e guarde o comprovante gerado", imagem: ""},
     ],
-    tags: ["renovação", "matrícula", "portal", "semestre"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar sistema.asoec.com.br", url: "https://sistema.asoec.com.br", descricao: ""},
+      {emoji: "🌐", titulo: "Calendário Acadêmico", url: "https://universo.edu.br/", descricao: "Verifique as datas no site da UNIVERSO"},
+    ],
+    tags: ["renovação", "matrícula", "semestre", "disciplinas"]
   },
+
   {
-    numero: "04", perfil: "aluno", categoria: "Matrícula",
-    titulo: "Segunda Chamada de Matrícula",
-    descricao: "Perdeu o prazo de matrícula? Veja como solicitar a segunda chamada e quais documentos são necessários.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "04", perfil: "aluno", categoria: "Matrícula", prioridade: 4,
+    titulo: "Trancamento de Matrícula",
+    descricao: "O MIA prevê o trancamento de matrícula para interrupção temporária dos estudos. Veja como solicitar e quais são as condições.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Fique atento ao calendário acadêmico para as datas de segunda chamada",
-      "Compareça à Secretaria Acadêmica com RG e documentos exigidos",
-      "Realize o pagamento da taxa de segunda chamada conforme orientação",
-      "Aguarde confirmação e verifique no portal se a matrícula foi efetivada"
+      {texto: "O trancamento de matrícula interrompe temporariamente o vínculo acadêmico com a instituição", imagem: ""},
+      {texto: "Dirija-se à Secretaria Acadêmica dentro do prazo previsto no calendário acadêmico", imagem: ""},
+      {texto: "Preencha o requerimento de trancamento e apresente os documentos solicitados", imagem: ""},
+      {texto: "Atenção: o trancamento não suspende as obrigações financeiras. Consulte o setor financeiro", imagem: ""},
+      {texto: "Para retornar, será necessário solicitar reabertura de matrícula — veja o Tutorial de Reabertura", imagem: ""},
     ],
-    tags: ["segunda chamada", "matrícula", "secretaria"]
+    links: [
+      {emoji: "📋", titulo: "Requerimentos Online", url: "https://sistema.asoec.com.br", descricao: "Acesse o Espaço do Aluno para requerimentos"},
+    ],
+    tags: ["trancamento", "matrícula", "secretaria", "pausa"]
   },
+
   {
-    numero: "05", perfil: "aluno", categoria: "AVA / EAD",
-    titulo: "Como Acessar o AVA",
-    descricao: "Passo a passo para fazer login no Ambiente Virtual de Aprendizagem e encontrar suas disciplinas online.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "05", perfil: "aluno", categoria: "Matrícula", prioridade: 5,
+    titulo: "Inclusão e Exclusão de Disciplinas",
+    descricao: "Como solicitar inclusão ou exclusão de disciplinas na sua grade horária. Procedimento previsto no MIA 2026.1.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse ava.universo.edu.br pelo navegador (Chrome ou Firefox recomendados)",
-      "Use o e-mail institucional @universo.edu.br como usuário",
-      "Na primeira entrada, sua senha provisória é seu CPF (somente números)",
-      "Altere a senha imediatamente após o primeiro acesso — é obrigatório",
-      "Clique em 'Meus Cursos' para ver suas disciplinas do semestre"
+      {texto: "O período de inclusão/exclusão ocorre no início de cada semestre — consulte o calendário acadêmico", imagem: ""},
+      {texto: "Acesse sistema.asoec.com.br e clique em 'Inclusão e Exclusão' no menu lateral", imagem: ""},
+      {texto: "Selecione as disciplinas que deseja incluir ou excluir, respeitando os pré-requisitos", imagem: ""},
+      {texto: "Atenção: turmas com menos de 30 alunos matriculados podem ser canceladas conforme o MIA", imagem: ""},
+      {texto: "Confirme a operação e guarde o comprovante", imagem: ""},
     ],
-    tags: ["AVA", "EAD", "online", "acesso", "login"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar sistema.asoec.com.br", url: "https://sistema.asoec.com.br", descricao: ""},
+    ],
+    tags: ["inclusão", "exclusão", "disciplinas", "grade", "horário"]
   },
+
+  // ===== FINANCEIRO =====
   {
-    numero: "06", perfil: "aluno", categoria: "AVA / EAD",
-    titulo: "Ambiente AVA 100% Online — Como Funciona",
-    descricao: "Para alunos de cursos EAD: entenda como funciona a rotina de estudos, prazos de atividades e provas presenciais.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "06", perfil: "aluno", categoria: "Financeiro", prioridade: 6,
+    titulo: "Como Acessar o Financeiro",
+    descricao: "Acesse boletos, extrato financeiro e informações de pagamento pelo Espaço do Aluno no sistema ASOEC.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Todas as aulas ficam disponíveis no AVA semanalmente",
-      "Acesse o cronograma da disciplina para ver os prazos das atividades",
-      "As avaliações online têm data e hora limite — não deixe para a última hora",
-      "Provas presenciais acontecem nos polos — verifique o endereço com antecedência",
-      "Dúvidas com o conteúdo? Use o fórum da disciplina para contato com o professor"
+      {texto: "Acesse sistema.asoec.com.br com seu código e token", imagem: ""},
+      {texto: "Clique em 'Financeiro' no menu lateral esquerdo", imagem: ""},
+      {texto: "Visualize os boletos em aberto e clique para gerar o boleto do mês atual", imagem: ""},
+      {texto: "Pague via internet banking, app bancário ou lotérica até a data de vencimento", imagem: ""},
+      {texto: "Para negociação de débitos em atraso, compareça ao setor financeiro da UNIVERSO", imagem: ""},
     ],
-    tags: ["EAD", "online", "atividades", "provas", "polo"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar sistema.asoec.com.br", url: "https://sistema.asoec.com.br", descricao: ""},
+      {emoji: "📱", titulo: "WhatsApp Institucional", url: "https://api.whatsapp.com/send?phone=+5508007210251", descricao: "0800 721 0251"},
+    ],
+    tags: ["financeiro", "boleto", "pagamento", "mensalidade"]
   },
+
+  // ===== AVA / EAD =====
   {
-    numero: "07", perfil: "aluno", categoria: "Financeiro",
-    titulo: "Como Pagar a Mensalidade",
-    descricao: "Formas de pagamento disponíveis, onde encontrar o boleto e o que fazer em caso de atraso.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "07", perfil: "aluno", categoria: "AVA / EAD", prioridade: 7,
+    titulo: "Acesso ao AVA — Ambiente Virtual",
+    descricao: "Como acessar o Ambiente Virtual de Aprendizagem da UNIVERSO. Conforme o MIA, disciplinas no formato a distância são ofertadas pelo AVA.",
+    tipo: "Link",
+    url: "https://sistema.asoec.com.br",
+    imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Aluno e clique em 'Financeiro'",
-      "Localize o boleto do mês atual e clique em 'Gerar Boleto'",
-      "Pague via internet banking, app bancário ou lotérica até a data de vencimento",
-      "Em caso de atraso, o boleto é atualizado automaticamente — não use boleto vencido",
-      "Para negociação de dívidas, vá ao setor financeiro da instituição"
+      {texto: "Acesse sistema.asoec.com.br e clique em 'Acessar AVA' na tela de login — selecione sua instituição (UNIVERSO)", imagem: ""},
+      {texto: "Faça login com seu código de aluno e senha", imagem: ""},
+      {texto: "Na tela inicial, localize as disciplinas do seu curso — as disciplinas EAD ficam disponíveis aqui", imagem: ""},
+      {texto: "Fique atento aos prazos das atividades — eles são fixos e não têm reposição automática", imagem: ""},
+      {texto: "Dúvidas de conteúdo? Utilize o fórum ou chat da disciplina para contato com o professor", imagem: ""},
     ],
-    tags: ["mensalidade", "boleto", "pagamento", "financeiro"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar o AVA", url: "https://sistema.asoec.com.br", descricao: "Espaço do Aluno — acesso ao AVA"},
+    ],
+    tags: ["AVA", "EAD", "online", "ambiente virtual", "disciplinas"]
   },
+
+  // ===== SECRETARIA =====
   {
-    numero: "08", perfil: "aluno", categoria: "Financeiro",
-    titulo: "Trocas de Bolsas e Financiamentos",
-    descricao: "Entenda como funciona o FIES, ProUni, bolsas institucionais e como solicitar ou renovar o benefício.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "08", perfil: "aluno", categoria: "Secretaria", prioridade: 8,
+    titulo: "Documentos Expedidos pela UNIVERSO",
+    descricao: "Como solicitar atestado de matrícula, histórico escolar, declarações e outros documentos. Baseado no MIA 2026.1, capítulo 21.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse o setor de bolsas e financiamentos da UNIVERSO",
-      "Verifique os requisitos de cada modalidade (FIES, ProUni, bolsa institucional)",
-      "Mantenha o Imposto de Renda em dia — é exigido para FIES e ProUni",
-      "Renove seu benefício dentro do prazo indicado pela instituição",
-      "Dúvidas? Procure o setor financeiro ou acesse universo.edu.br"
+      {texto: "Acesse sistema.asoec.com.br e clique em 'Documentos Digitais' ou 'Secretaria' no menu", imagem: ""},
+      {texto: "Selecione o tipo de documento desejado: Atestado de Matrícula, Declaração, Histórico Escolar, etc.", imagem: ""},
+      {texto: "Preencha o requerimento e aguarde o prazo de entrega informado", imagem: ""},
+      {texto: "Diplomas e certificados de conclusão de curso são expedidos após o cumprimento de todos os requisitos curriculares", imagem: ""},
+      {texto: "Para documentos urgentes ou específicos, compareça presencialmente à Secretaria Acadêmica", imagem: ""},
     ],
-    tags: ["FIES", "ProUni", "bolsa", "financiamento", "benefício"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar sistema.asoec.com.br", url: "https://sistema.asoec.com.br", descricao: ""},
+    ],
+    tags: ["documentos", "atestado", "histórico", "declaração", "secretaria", "diploma"]
   },
+
   {
-    numero: "09", perfil: "aluno", categoria: "Secretaria",
-    titulo: "Como Entregar Atestado Médico",
-    descricao: "Procedimento correto para protocolar atestados e abonar faltas. Prazo: 72h após a falta.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "09", perfil: "aluno", categoria: "Secretaria", prioridade: 9,
+    titulo: "Dispensa de Disciplinas",
+    descricao: "Alunos com histórico de disciplinas cursadas em outras instituições podem solicitar dispensa. Veja como no MIA 2026.1, capítulo 11.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "O atestado deve ser entregue em até 72 horas após a(s) falta(s)",
-      "Dirija-se à Secretaria Acadêmica com RG e atestado original",
-      "Solicite o comprovante de protocolo — guarde sempre",
-      "O abono de falta não substitui atividades avaliativas perdidas",
-      "Para internações longas, verifique com a coordenação sobre regime especial"
+      {texto: "A dispensa é concedida a alunos que comprovem ter cursado disciplina equivalente em outra IES reconhecida", imagem: ""},
+      {texto: "Dirija-se à Secretaria Acadêmica com o histórico escolar original e o programa da disciplina cursada", imagem: ""},
+      {texto: "Preencha o requerimento de dispensa e aguarde a análise do coordenador do curso", imagem: ""},
+      {texto: "O resultado será comunicado dentro do prazo estipulado pela Secretaria", imagem: ""},
     ],
-    tags: ["atestado", "falta", "secretaria", "abono", "médico"]
+    links: [],
+    tags: ["dispensa", "disciplina", "aproveitamento", "transferência", "histórico"]
   },
+
+  // ===== AVALIAÇÃO =====
   {
-    numero: "10", perfil: "aluno", categoria: "Secretaria",
-    titulo: "Secretaria Online — O que Posso Resolver",
-    descricao: "Saiba quais serviços da secretaria estão disponíveis online e como acessar pelo portal.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "10", perfil: "aluno", categoria: "Secretaria", prioridade: 10,
+    titulo: "Avaliação e Revisão de Notas",
+    descricao: "Como funciona o sistema de avaliação da UNIVERSO e como solicitar revisão de rendimento escolar. Baseado no MIA 2026.1, capítulos 16 e 17.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Aluno em portal.universo.edu.br",
-      "Clique em 'Requerimentos' para solicitar documentos online",
-      "Histórico escolar, declarações e atestados de matrícula ficam prontos em até 48h",
-      "Acompanhe o status do seu pedido pelo portal",
-      "Para documentos urgentes, compareça presencialmente à Secretaria"
+      {texto: "As avaliações seguem os critérios definidos no Plano de Ensino de cada disciplina — solicite ao professor no início do semestre", imagem: ""},
+      {texto: "Consulte suas notas e frequência pelo sistema ASOEC: sistema.asoec.com.br → Notas e Faltas", imagem: ""},
+      {texto: "Para solicitar revisão de nota, dirija-se à Secretaria Acadêmica dentro do prazo previsto no calendário", imagem: ""},
+      {texto: "Preencha o requerimento de revisão e aguarde a análise", imagem: ""},
+      {texto: "Acompanhe o resultado pelo sistema ou na Secretaria", imagem: ""},
     ],
-    tags: ["secretaria", "online", "requerimento", "documentos", "histórico"]
+    links: [
+      {emoji: "🔗", titulo: "Consultar Notas e Faltas", url: "https://sistema.asoec.com.br", descricao: "Acesse Notas e Faltas no sistema ASOEC"},
+    ],
+    tags: ["notas", "avaliação", "revisão", "frequência", "rendimento"]
   },
+
+  // ===== CALENDÁRIO =====
   {
-    numero: "11", perfil: "aluno", categoria: "Calendário",
+    numero: "11", perfil: "aluno", categoria: "Calendário", prioridade: 11,
     titulo: "Calendário Acadêmico 2026.1",
-    descricao: "Datas importantes do semestre: início das aulas, avaliações, recesso, colação de grau e prazos de matrícula.",
+    descricao: "Datas importantes do semestre: início das aulas, períodos de matrícula, avaliações, colação de grau. Consulte sempre o site oficial.",
     tipo: "Link",
     url: "https://universo.edu.br/",
     imagem: "", destaque: false,
     passos: [
-      "Acesse o link abaixo para ver o calendário completo no site da UNIVERSO",
-      "Salve as datas das avaliações no seu celular ou agenda",
-      "Fique atento aos prazos de matrícula e renovação",
-      "O calendário pode ter ajustes — verifique periodicamente"
+      {texto: "Acesse o site da UNIVERSO (universo.edu.br) para consultar o calendário acadêmico atualizado", imagem: ""},
+      {texto: "Salve as datas mais importantes no seu celular ou agenda pessoal", imagem: ""},
+      {texto: "Fique atento especialmente aos períodos de matrícula, inclusão/exclusão de disciplinas e provas", imagem: ""},
     ],
-    tags: ["calendário", "datas", "avaliação", "semestre", "2026"]
+    links: [
+      {emoji: "🌐", titulo: "Site UNIVERSO — Calendário", url: "https://universo.edu.br/", descricao: ""},
+    ],
+    tags: ["calendário", "datas", "semestre", "provas", "2026"]
   },
+
+  // ===== ESTÁGIO / TCC =====
   {
-    numero: "12", perfil: "aluno", categoria: "Estágio / TCC",
-    titulo: "Como Iniciar o Estágio",
-    descricao: "Requisitos, documentação necessária e passo a passo para formalizar seu estágio obrigatório ou não-obrigatório.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "12", perfil: "aluno", categoria: "Estágio / TCC", prioridade: 12,
+    titulo: "Estágio Supervisionado Curricular",
+    descricao: "Como funciona e como formalizar o estágio obrigatório. Baseado no MIA 2026.1, capítulo 14.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Verifique com sua coordenação a carga horária mínima exigida",
-      "Encontre uma empresa ou instituição parceira — o setor de estágios pode ajudar",
-      "Solicite o Termo de Compromisso de Estágio na Secretaria",
-      "Após assinatura de todas as partes, entregue uma via na Secretaria",
-      "Mantenha o relatório de atividades atualizado — será exigido ao final"
+      {texto: "O estágio supervisionado é obrigatório em vários cursos — verifique com seu coordenador a carga horária exigida", imagem: ""},
+      {texto: "Encontre uma empresa ou instituição parceira para realizar o estágio — o setor de estágios da UNIVERSO pode ajudar", imagem: ""},
+      {texto: "Solicite o Termo de Compromisso de Estágio (TCE) na Secretaria ou pelo sistema ASOEC", imagem: ""},
+      {texto: "O TCE deve ser assinado por você, pela empresa e pela instituição antes do início do estágio", imagem: ""},
+      {texto: "Mantenha o relatório de atividades atualizado — será exigido para validação da carga horária", imagem: ""},
     ],
-    tags: ["estágio", "TCC", "documentos", "empresa", "obrigatório"]
+    links: [
+      {emoji: "🔗", titulo: "Acessar Estágio no sistema", url: "https://sistema.asoec.com.br", descricao: "Menu Estágio no ASOEC"},
+    ],
+    tags: ["estágio", "TCE", "obrigatório", "empresa", "carga horária"]
   },
+
   {
-    numero: "13", perfil: "aluno", categoria: "Bolsas",
-    titulo: "Exame de Bolsa — Como Funciona",
-    descricao: "Entenda o processo seletivo para bolsas institucionais da UNIVERSO: inscrição, prova e resultado.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "13", perfil: "aluno", categoria: "Estágio / TCC", prioridade: 13,
+    titulo: "Trabalho de Conclusão de Curso — TCC",
+    descricao: "Orientações sobre o TCC conforme o MIA 2026.1, capítulo 23. Cada curso tem regulamento próprio.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Fique atento aos editais publicados no site da UNIVERSO",
-      "Faça sua inscrição dentro do prazo — normalmente online pelo portal",
-      "Estude português, matemática e conhecimentos gerais para a prova",
-      "O resultado é divulgado pelo portal e no site da instituição",
-      "Se aprovado, compareça dentro do prazo para formalizar a bolsa"
+      {texto: "O TCC é exigido nos cursos que o preveem em seu Projeto Pedagógico — consulte seu coordenador", imagem: ""},
+      {texto: "Escolha o tema e o professor orientador com antecedência, conforme prazo do seu curso", imagem: ""},
+      {texto: "Siga as normas da ABNT para elaboração do trabalho — a biblioteca da UNIVERSO oferece suporte", imagem: ""},
+      {texto: "Entregue as versões no prazo estipulado pelo regulamento do curso", imagem: ""},
+      {texto: "Prepare-se para a apresentação oral perante a banca examinadora", imagem: ""},
     ],
-    tags: ["bolsa", "exame", "seleção", "desconto", "edital"]
+    links: [],
+    tags: ["TCC", "monografia", "conclusão", "banca", "orientador"]
   },
-  // ===== PROFESSORES =====
+
+  // ===== BOLSAS =====
   {
-    numero: "P01", perfil: "professor", categoria: "Lançamento de Notas",
-    titulo: "Como Lançar Notas no Portal",
-    descricao: "Passo a passo para lançar as notas das avaliações no sistema acadêmico dentro do prazo.",
-    tipo: "Texto", url: "", imagem: "", destaque: true,
+    numero: "14", perfil: "aluno", categoria: "Bolsas", prioridade: 14,
+    titulo: "Bolsas e Financiamentos Estudantis",
+    descricao: "A UNIVERSO oferece bolsas institucionais e aceita FIES e ProUni. Consulte o setor financeiro para mais informações.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Professor em portal.universo.edu.br",
-      "Clique em 'Diário de Classe' no menu lateral",
-      "Selecione a disciplina e a turma desejada",
-      "Clique em 'Lançar Notas' e preencha os campos de cada aluno",
-      "Salve e confirme — respeite o prazo do calendário acadêmico"
+      {texto: "A UNIVERSO oferece bolsas de estudo por meio de exame de bolsa — fique atento aos editais no site da instituição", imagem: ""},
+      {texto: "Para FIES e ProUni, acesse o portal do MEC e verifique se a UNIVERSO participa do programa no semestre desejado", imagem: ""},
+      {texto: "Compareça ao setor financeiro com sua documentação para verificar as opções disponíveis para seu perfil", imagem: ""},
+      {texto: "Renove seu benefício dentro do prazo indicado — bolsas não renovadas podem ser canceladas", imagem: ""},
     ],
-    tags: ["notas", "diário", "portal", "avaliação", "turma"]
+    links: [
+      {emoji: "🌐", titulo: "Site UNIVERSO", url: "https://universo.edu.br/", descricao: "Consulte editais e informações de bolsas"},
+      {emoji: "📱", titulo: "WhatsApp Institucional", url: "https://api.whatsapp.com/send?phone=+5508007210251", descricao: "0800 721 0251"},
+    ],
+    tags: ["bolsa", "FIES", "ProUni", "financiamento", "desconto"]
   },
+
+  // ===== BIBLIOTECA =====
   {
-    numero: "P02", perfil: "professor", categoria: "Frequência",
-    titulo: "Como Registrar Frequência",
-    descricao: "Como lançar a presença dos alunos no diário de classe online.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "15", perfil: "aluno", categoria: "Outros", prioridade: 15,
+    titulo: "Biblioteca — Serviços e Empréstimos",
+    descricao: "Como usar a biblioteca da UNIVERSO: empréstimos, renovações, acervo digital e horários. Baseado no MIA 2026.1, capítulo 28.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Professor e abra o 'Diário de Classe'",
-      "Selecione a disciplina, turma e a data da aula",
-      "Marque as presenças e faltas de cada aluno",
-      "Salve antes de sair da página — não há salvamento automático",
-      "O sistema bloqueia o lançamento após o prazo limite"
+      {texto: "A biblioteca está localizada na UNIVERSO Goiânia — Rua 105-B nº 185, Setor Sul", imagem: ""},
+      {texto: "Você pode emprestrar livros com seu cartão de aluno — consulte o número de exemplares permitidos por curso", imagem: ""},
+      {texto: "Renove empréstimos pelo sistema ASOEC ou presencialmente antes do prazo de devolução", imagem: ""},
+      {texto: "Devoluções em atraso geram multas conforme as penalidades previstas no MIA", imagem: ""},
+      {texto: "A biblioteca também oferece acesso a bases de dados digitais — consulte o bibliotecário para orientação", imagem: ""},
     ],
-    tags: ["frequência", "presença", "diário", "falta", "turma"]
+    links: [],
+    tags: ["biblioteca", "livros", "empréstimo", "acervo", "renovação"]
   },
+
+  // ===== ATIVIDADES COMPLEMENTARES =====
   {
-    numero: "P03", perfil: "professor", categoria: "AVA / EAD",
-    titulo: "Como Publicar Conteúdo no AVA",
-    descricao: "Como disponibilizar materiais, atividades e avaliações para os alunos no Ambiente Virtual.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "16", perfil: "aluno", categoria: "Outros", prioridade: 16,
+    titulo: "Atividades Complementares",
+    descricao: "O que são, como registrar e quantas horas são necessárias. Baseado no MIA 2026.1, capítulo 25.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
     passos: [
-      "Acesse ava.universo.edu.br com seu login institucional",
-      "Selecione a disciplina desejada no painel",
-      "Clique em 'Ativar edição' para liberar as ferramentas de conteúdo",
-      "Use 'Adicionar atividade ou recurso' para inserir arquivos, fóruns ou questionários",
-      "Defina a data de disponibilidade e salve as configurações"
+      {texto: "Atividades complementares são obrigatórias na maioria dos cursos — verifique com seu coordenador a carga horária exigida", imagem: ""},
+      {texto: "São aceitas: palestras, eventos, cursos extracurriculares, publicações, participação em projetos de extensão, monitoria e outros", imagem: ""},
+      {texto: "Guarde os certificados e comprovantes de participação de todas as atividades", imagem: ""},
+      {texto: "Acesse sistema.asoec.com.br → Atividades Complementares para registrar as horas", imagem: ""},
+      {texto: "Não deixe para fazer tudo no final do curso — distribua as atividades ao longo dos semestres", imagem: ""},
     ],
-    tags: ["AVA", "EAD", "material", "atividade", "publicar"]
+    links: [
+      {emoji: "🔗", titulo: "Registrar no sistema ASOEC", url: "https://sistema.asoec.com.br", descricao: ""},
+    ],
+    tags: ["atividades complementares", "horas", "extensão", "certificado"]
   },
+
+  // ===== DIREITOS E DEVERES =====
   {
-    numero: "P04", perfil: "professor", categoria: "Plano de Ensino",
-    titulo: "Como Cadastrar o Plano de Ensino",
-    descricao: "Procedimento para elaborar e cadastrar o plano de ensino no sistema acadêmico dentro do prazo.",
-    tipo: "Texto", url: "", imagem: "", destaque: false,
+    numero: "17", perfil: "aluno", categoria: "Outros", prioridade: 17,
+    titulo: "Direitos e Deveres do Aluno",
+    descricao: "Resumo dos principais direitos e deveres dos alunos da UNIVERSO. Baseado no MIA 2026.1, capítulo 31.",
+    tipo: "PDF",
+    url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf",
+    imagem: "", destaque: false,
     passos: [
-      "Acesse o Portal do Professor e clique em 'Plano de Ensino'",
-      "Selecione a disciplina e o semestre vigente",
-      "Preencha: ementa, objetivos, conteúdo programático, metodologia e avaliação",
-      "Revise e clique em 'Enviar para aprovação'",
-      "Acompanhe o status pelo portal — prazo definido pela coordenação"
+      {texto: "Todo aluno tem direito a um ambiente de aprendizagem respeitoso, acesso às informações acadêmicas e revisão de avaliações", imagem: ""},
+      {texto: "É dever do aluno cumprir o Regimento Interno, respeitar professores e colegas e comparecer às aulas", imagem: ""},
+      {texto: "A frequência mínima obrigatória é de 75% em cada disciplina — faltas acima desse limite resultam em reprovação", imagem: ""},
+      {texto: "Consulte o capítulo 31 do MIA para a lista completa de direitos e deveres", imagem: ""},
     ],
-    tags: ["plano de ensino", "ementa", "portal", "disciplina", "coordenação"]
+    links: [
+      {emoji: "📥", titulo: "Ler MIA 2026.1 completo", url: "https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf", descricao: "Capítulo 31 — Direitos e Deveres"},
+    ],
+    tags: ["direitos", "deveres", "frequência", "75%", "regimento"]
+  },
+
+  // ===== COORDENADORES =====
+  {
+    numero: "18", perfil: "aluno", categoria: "Secretaria", prioridade: 18,
+    titulo: "Fale com seu Coordenador",
+    descricao: "Os coordenadores realizam atendimentos presenciais com dia e horário marcados. Confira os e-mails por curso.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Os coordenadores atendem presencialmente com horário marcado — consulte os horários pelo App Meu UNIVERSO", imagem: ""},
+      {texto: "Você também pode entrar em contato por e-mail conforme o seu curso:", imagem: ""},
+      {texto: "Administração: gestor.empresarial@go.universo.edu.br — Professora Lúcia Kratz", imagem: ""},
+      {texto: "Design de Moda: gestor.designmoda@go.universo.edu.br — Professora Suely Calafiori", imagem: ""},
+      {texto: "Direito: gestor.direito@go.universo.edu.br | Educação Física: gestor.educacaofisica@go.universo.edu.br | Enfermagem: gestor.enfermagem@go.universo.edu.br | Farmácia: gestor.farmacia@go.universo.edu.br | Fisioterapia: gestor.fisioterapia@go.universo.edu.br | Medicina Veterinária: gestor.veterinaria@go.universo.edu.br | Nutrição: gestor.nutricao@go.universo.edu.br | Odontologia: gestor.odontologia@go.universo.edu.br | Psicologia: gestor.psicologia@go.universo.edu.br", imagem: ""},
+    ],
+    links: [
+      {emoji: "📱", titulo: "WhatsApp Institucional", url: "https://api.whatsapp.com/send?phone=+5508007210251", descricao: "0800 721 0251"},
+      {emoji: "🌐", titulo: "Site UNIVERSO", url: "https://universo.edu.br/", descricao: ""},
+    ],
+    tags: ["coordenador", "atendimento", "e-mail", "horário", "curso"]
   },
 ];
 
@@ -286,7 +408,18 @@ async function popular() {
   const log = document.getElementById("log");
   btn.disabled = true;
   btn.textContent = "⏳ Criando tutoriais...";
-  log.innerHTML = "";
+  log.innerHTML = '<div class="info">Iniciando... apagando dados anteriores e recriando.</div>';
+
+  // Primeiro apagar coleção existente
+  try {
+    const snap = await db.collection("tutoriais").get();
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    log.innerHTML += '<div class="info">✓ Dados anteriores removidos.</div>';
+  } catch(e) {
+    log.innerHTML += `<div class="err">Aviso ao limpar: ${e.message}</div>`;
+  }
 
   let ok = 0, erro = 0;
   for (const t of TUTORIAIS) {
@@ -305,9 +438,9 @@ async function popular() {
     }
   }
 
-  btn.textContent = `✅ Concluído! ${ok} criados${erro ? `, ${erro} erros` : ""}`;
-  log.innerHTML += `<div style="margin-top:0.5rem;font-weight:700;color:#1B2D6B">
-    Pronto! Feche esta página e acesse o sistema.
+  btn.textContent = `✅ Concluído! ${ok} tutoriais criados${erro ? `, ${erro} erro(s)` : ""}.`;
+  log.innerHTML += `<div class="info" style="margin-top:0.75rem">
+    ✅ Pronto! Feche esta página, acesse o site e apague este arquivo do repositório GitHub.
   </div>`;
 }
 </script>
