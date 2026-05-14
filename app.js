@@ -21,7 +21,10 @@ const db = firebase.firestore();
 
 // ===== CONSTANTES =====
 const ADMIN_PASSWORD = "universo2025";
-const LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/UNIVERSO_Logo.svg/220px-UNIVERSO_Logo.svg.png";
+const LOGO_TEXTO    = "logo-texto.png";    // Login e lugares menores
+const LOGO_ESCUDO   = "logo-escud.png";    // Sidebar lateral
+const LOGO_COMPLETO = "logo-complet.png";  // Relatórios
+const LOGO_URL = LOGO_ESCUDO;
 
 const CATEGORIAS = [
   "Todos",
@@ -288,7 +291,7 @@ function Login({ onLogin }) {
     <div className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <img src={LOGO_URL} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
+          <img src={LOGO_TEXTO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
         </div>
         <div className="login-title">Tutoriais UNIVERSO</div>
         <div className="login-subtitle">Guias e passo a passos para alunos</div>
@@ -828,9 +831,9 @@ function SidebarContent({ perfil, tab, setTab, onLogout, usuario }) {
   return (
     <>
       <div className="sidebar-brand">
-        <img src={LOGO_URL} alt="UNIVERSO" onError={e => e.target.style.display = "none"} />
+        <img src={LOGO_ESCUDO} alt="UNIVERSO" onError={e => e.target.style.display = "none"} style={{ height: 44, objectFit: "contain" }} />
         <div className="sidebar-brand-text">
-          Tutoriais<br /><span>Centro Universitário UNIVERSO</span>
+          Tutoriais<br /><span>Centro Universo Goiânia</span>
         </div>
       </div>
       <div className="sidebar-nav">
@@ -891,13 +894,12 @@ function App() {
 
       {/* Main */}
       <div className="main-content">
-        {/* Header Mobile */}
         <div className="header-mobile">
           <div className="header-mobile-logo">
             <button className="header-menu-btn" onClick={() => setMobileMenuOpen(true)}>
               <Icons.menu />
             </button>
-            <div className="header-mobile-title">Tutoriais UNIVERSO</div>
+            <img src={LOGO_TEXTO} alt="UNIVERSO" style={{ height: 28, objectFit: "contain", filter: "brightness(0) invert(1)" }} onError={e => e.target.style.display="none"} />
           </div>
         </div>
 
