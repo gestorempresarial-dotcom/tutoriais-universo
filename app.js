@@ -212,7 +212,12 @@ function ModuloTutoriais({perfil, tutoriais, avisos}) {
     <div>
       <FaixaAvisos avisos={avisos}/>
       <div className="hero-banner">
-        <div className="hero-banner-logo"><img src="logo-complet.png" alt="UNIVERSO" onError={e=>e.target.style.display="none"} style={{height:52,width:"auto",maxWidth:220,objectFit:"contain"}}/></div>
+        <div className="hero-banner-logo">
+          <img src="logo-complet.png" alt="UNIVERSO"
+            onError={e=>e.target.style.display="none"}
+            style={{height:64,width:"auto",maxWidth:240,objectFit:"contain"}}
+          />
+        </div>
         <div className="hero-banner-text">
           <h2>{perfil==="professor"?"Tutoriais para Professores":"Tutoriais para Alunos"}</h2>
           <p>{perfil==="professor"?"Guias práticos para o dia a dia docente":"Tudo que você precisa para aproveitar sua vida acadêmica"}</p>
@@ -444,16 +449,55 @@ function ModuloGestor({todos, setToast}) {
 
 // ===== SIDEBAR =====
 function SidebarConteudo({perfil, tab, setTab, onSair}) {
-  const nav = perfil==="gestor"?[{id:"tutoriais-aluno",label:"Ver — Alunos",emoji:"🎓"},{id:"tutoriais-prof",label:"Ver — Professores",emoji:"👩‍🏫"},{id:"gestor",label:"Gerenciar",emoji:"⚙️"}]:[{id:"tutoriais",label:"Tutoriais",emoji:"📚"}];
+  const nav = perfil==="gestor"
+    ?[{id:"tutoriais-aluno",label:"Ver — Alunos",emoji:"🎓"},{id:"tutoriais-prof",label:"Ver — Professores",emoji:"👩‍🏫"},{id:"gestor",label:"Gerenciar",emoji:"⚙️"}]
+    :[{id:"tutoriais",label:"Tutoriais",emoji:"📚"}];
   return (
     <>
-      <div className="sidebar-brand"><img src="logo-escud.png" alt="UNIVERSO" onError={e=>e.target.style.display="none"} style={{height:52,width:"auto",objectFit:"contain"}}/></div>
+      {/* TOPO SIDEBAR — logo grande + nome */}
+      <div style={{padding:"1.5rem 1.25rem 1rem",borderBottom:"1px solid rgba(255,255,255,0.12)",textAlign:"center"}}>
+        <img src="logo-complet.png" alt="UNIVERSO"
+          onError={e=>{e.target.style.display="none";}}
+          style={{width:"100%",maxWidth:180,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}
+        />
+        <div style={{marginTop:"0.6rem",fontSize:"0.72rem",color:"rgba(255,255,255,0.55)",letterSpacing:"0.04em"}}>
+          Portal de Tutoriais
+        </div>
+      </div>
+
       <div className="sidebar-nav">
         <div className="sidebar-section">Menu</div>
-        {nav.map(i=><div key={i.id} className={`sidebar-item${tab===i.id?" active":""}`} onClick={()=>setTab(i.id)}><span className="si-icon">{i.emoji}</span>{i.label}</div>)}
+        {nav.map(i=>(
+          <div key={i.id} className={`sidebar-item${tab===i.id?" active":""}`} onClick={()=>setTab(i.id)}>
+            <span className="si-icon">{i.emoji}</span>{i.label}
+          </div>
+        ))}
       </div>
+
+      {/* LINKS ÚTEIS */}
+      <div style={{padding:"0.75rem 1.25rem",borderTop:"1px solid rgba(255,255,255,0.1)"}}>
+        <div style={{fontSize:"0.62rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",color:"rgba(255,255,255,0.4)",marginBottom:"0.5rem"}}>Links</div>
+        <a href="https://universo.edu.br/" target="_blank" rel="noopener noreferrer"
+          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
+          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
+          🌐 Site UNIVERSO
+        </a>
+        <a href="https://api.whatsapp.com/send?phone=+5508007210251" target="_blank" rel="noopener noreferrer"
+          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
+          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
+          📱 WhatsApp Institucional
+        </a>
+        <a href="https://universo.edu.br/wp-content/uploads/2025/12/UNIVERSO-GO-l-MIA-l-2026.1-l-17112025.pdf" target="_blank" rel="noopener noreferrer"
+          style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.45rem 0",fontSize:"0.78rem",color:"rgba(255,255,255,0.7)",textDecoration:"none",transition:"color 0.2s"}}
+          onMouseEnter={e=>e.currentTarget.style.color="white"} onMouseLeave={e=>e.currentTarget.style.color="rgba(255,255,255,0.7)"}>
+          📘 MIA 2026.1
+        </a>
+      </div>
+
       <div className="sidebar-footer">
-        <div className="sidebar-perfil-tag">{perfil==="gestor"?"⚙️ Gestor":perfil==="professor"?"👩‍🏫 Professor":"🎓 Aluno"}</div>
+        <div className="sidebar-perfil-tag">
+          {perfil==="gestor"?"⚙️ Gestor":perfil==="professor"?"👩‍🏫 Professor":"🎓 Aluno"}
+        </div>
         {perfil!=="aluno"&&<button className="btn-sair" onClick={onSair}>Sair</button>}
       </div>
     </>
