@@ -23,7 +23,7 @@
   <img src="logo-escud.png" style="height:60px;margin-bottom:1rem" onerror="this.style.display='none'" />
   <h2>Popular Tutoriais — UNIVERSO Goiânia</h2>
   <div class="aviso">
-    ⚠️ <strong>Atenção:</strong> Execute apenas uma vez. Todos os tutoriais abaixo foram elaborados com base no <strong>MIA 2026.1</strong> e no <strong>Tutorial 02 oficial (Confirmação de Matrícula)</strong>. Exclua este arquivo do repositório após usar.
+    ⚠️ <strong>Atenção:</strong> Execute apenas uma vez. Tutoriais de aluno baseados no <strong>MIA 2026.1</strong> e <strong>Tutorial 02 oficial</strong>. Tutoriais de professor baseados no <strong>Manual do Professor</strong>, <strong>Tutorial 001 (Deletar tentativas AVA)</strong>, <strong>Tutorial 002 (Deferir Estágio/TCC)</strong> e <strong>Tutorial 15 (Eventos de Extensão)</strong>. Exclua este arquivo do repositório após usar.
   </div>
   <p>Clique no botão para criar os tutoriais oficiais no Firebase.</p>
   <button id="btn" onclick="popular()">🚀 Criar Tutoriais no Firebase</button>
@@ -41,14 +41,12 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
-// ============================================================
-// TUTORIAIS BASEADOS NO MIA 2026.1 E TUTORIAL 02 OFICIAL
-// Fonte: Manual Informativo do Aluno 2026.1 — UNIVERSO Goiânia
-//        Tutorial 02 — Confirmação de Matrícula Calouros
-// ============================================================
 const TUTORIAIS = [
 
-  // ===== MATRÍCULA =====
+  // ================================================================
+  // TUTORIAIS DE ALUNO — Fonte: MIA 2026.1 e Tutorial 02 oficial
+  // ================================================================
+
   {
     numero: "01", perfil: "aluno", categoria: "Matrícula", prioridade: 1,
     titulo: "Manual do Aluno — MIA 2026.1",
@@ -149,7 +147,6 @@ const TUTORIAIS = [
     tags: ["inclusão", "exclusão", "disciplinas", "grade", "horário"]
   },
 
-  // ===== FINANCEIRO =====
   {
     numero: "06", perfil: "aluno", categoria: "Financeiro", prioridade: 6,
     titulo: "Como Acessar o Financeiro",
@@ -170,28 +167,26 @@ const TUTORIAIS = [
     tags: ["financeiro", "boleto", "pagamento", "mensalidade"]
   },
 
-  // ===== AVA / EAD =====
   {
     numero: "07", perfil: "aluno", categoria: "AVA / EAD", prioridade: 7,
     titulo: "Acesso ao AVA — Ambiente Virtual",
     descricao: "Como acessar o Ambiente Virtual de Aprendizagem da UNIVERSO. Conforme o MIA, disciplinas no formato a distância são ofertadas pelo AVA.",
     tipo: "Link",
-    url: "https://sistema.asoec.com.br",
+    url: "https://ead.universo.edu.br/",
     imagem: "", destaque: false,
     passos: [
-      {texto: "Acesse sistema.asoec.com.br e clique em 'Acessar AVA' na tela de login — selecione sua instituição (UNIVERSO)", imagem: ""},
-      {texto: "Faça login com seu código de aluno e senha", imagem: ""},
-      {texto: "Na tela inicial, localize as disciplinas do seu curso — as disciplinas EAD ficam disponíveis aqui", imagem: ""},
+      {texto: "Acesse ead.universo.edu.br no navegador de sua preferência (Chrome ou Firefox são recomendados)", imagem: ""},
+      {texto: "Faça login com seu usuário (matrícula) e senha em LETRAS MAIÚSCULAS conforme recebido na admissão", imagem: ""},
+      {texto: "Na tela inicial, localize as disciplinas do seu curso em 'Resumo dos Cursos'", imagem: ""},
       {texto: "Fique atento aos prazos das atividades — eles são fixos e não têm reposição automática", imagem: ""},
       {texto: "Dúvidas de conteúdo? Utilize o fórum ou chat da disciplina para contato com o professor", imagem: ""},
     ],
     links: [
-      {emoji: "🔗", titulo: "Acessar o AVA", url: "https://sistema.asoec.com.br", descricao: "Espaço do Aluno — acesso ao AVA"},
+      {emoji: "🔗", titulo: "Acessar o AVA", url: "https://ead.universo.edu.br/", descricao: "Ambiente Virtual de Aprendizagem — UNIVERSO EAD"},
     ],
     tags: ["AVA", "EAD", "online", "ambiente virtual", "disciplinas"]
   },
 
-  // ===== SECRETARIA =====
   {
     numero: "08", perfil: "aluno", categoria: "Secretaria", prioridade: 8,
     titulo: "Documentos Expedidos pela UNIVERSO",
@@ -227,7 +222,6 @@ const TUTORIAIS = [
     tags: ["dispensa", "disciplina", "aproveitamento", "transferência", "histórico"]
   },
 
-  // ===== AVALIAÇÃO =====
   {
     numero: "10", perfil: "aluno", categoria: "Secretaria", prioridade: 10,
     titulo: "Avaliação e Revisão de Notas",
@@ -247,7 +241,6 @@ const TUTORIAIS = [
     tags: ["notas", "avaliação", "revisão", "frequência", "rendimento"]
   },
 
-  // ===== CALENDÁRIO =====
   {
     numero: "11", perfil: "aluno", categoria: "Calendário", prioridade: 11,
     titulo: "Calendário Acadêmico 2026.1",
@@ -266,7 +259,6 @@ const TUTORIAIS = [
     tags: ["calendário", "datas", "semestre", "provas", "2026"]
   },
 
-  // ===== ESTÁGIO / TCC =====
   {
     numero: "12", perfil: "aluno", categoria: "Estágio / TCC", prioridade: 12,
     titulo: "Estágio Supervisionado Curricular",
@@ -303,7 +295,6 @@ const TUTORIAIS = [
     tags: ["TCC", "monografia", "conclusão", "banca", "orientador"]
   },
 
-  // ===== BOLSAS =====
   {
     numero: "14", perfil: "aluno", categoria: "Bolsas", prioridade: 14,
     titulo: "Bolsas e Financiamentos Estudantis",
@@ -323,7 +314,6 @@ const TUTORIAIS = [
     tags: ["bolsa", "FIES", "ProUni", "financiamento", "desconto"]
   },
 
-  // ===== BIBLIOTECA =====
   {
     numero: "15", perfil: "aluno", categoria: "Outros", prioridade: 15,
     titulo: "Biblioteca — Serviços e Empréstimos",
@@ -332,7 +322,7 @@ const TUTORIAIS = [
     url: "", imagem: "", destaque: false,
     passos: [
       {texto: "A biblioteca está localizada na UNIVERSO Goiânia — Rua 105-B nº 185, Setor Sul", imagem: ""},
-      {texto: "Você pode emprestrar livros com seu cartão de aluno — consulte o número de exemplares permitidos por curso", imagem: ""},
+      {texto: "Você pode emprestar livros com seu cartão de aluno — consulte o número de exemplares permitidos por curso", imagem: ""},
       {texto: "Renove empréstimos pelo sistema ASOEC ou presencialmente antes do prazo de devolução", imagem: ""},
       {texto: "Devoluções em atraso geram multas conforme as penalidades previstas no MIA", imagem: ""},
       {texto: "A biblioteca também oferece acesso a bases de dados digitais — consulte o bibliotecário para orientação", imagem: ""},
@@ -341,7 +331,6 @@ const TUTORIAIS = [
     tags: ["biblioteca", "livros", "empréstimo", "acervo", "renovação"]
   },
 
-  // ===== ATIVIDADES COMPLEMENTARES =====
   {
     numero: "16", perfil: "aluno", categoria: "Outros", prioridade: 16,
     titulo: "Atividades Complementares",
@@ -361,7 +350,6 @@ const TUTORIAIS = [
     tags: ["atividades complementares", "horas", "extensão", "certificado"]
   },
 
-  // ===== DIREITOS E DEVERES =====
   {
     numero: "17", perfil: "aluno", categoria: "Outros", prioridade: 17,
     titulo: "Direitos e Deveres do Aluno",
@@ -381,7 +369,6 @@ const TUTORIAIS = [
     tags: ["direitos", "deveres", "frequência", "75%", "regimento"]
   },
 
-  // ===== COORDENADORES =====
   {
     numero: "18", perfil: "aluno", categoria: "Secretaria", prioridade: 18,
     titulo: "Fale com seu Coordenador",
@@ -401,6 +388,199 @@ const TUTORIAIS = [
     ],
     tags: ["coordenador", "atendimento", "e-mail", "horário", "curso"]
   },
+
+  // ================================================================
+  // TUTORIAIS DE PROFESSOR
+  // Fonte: Manual do Professor UNIVERSO Goiânia
+  //        Tutorial 001 — Deletar Tentativas AVA (Prova Aluno)
+  //        Tutorial 002 — Deferir Protocolo de Estágio ou TCC
+  //        Tutorial 15  — Eventos de Extensão
+  // ================================================================
+
+  {
+    numero: "P01", perfil: "professor", categoria: "Primeiros Passos", prioridade: 1,
+    titulo: "Primeiro Acesso — Token e Portal do Professor",
+    descricao: "Como configurar seu token de segurança e acessar o Portal do Professor pela primeira vez. Baseado no Manual do Professor UNIVERSO Goiânia.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: true,
+    passos: [
+      {texto: "Acesse o Gerenciador Empresarial (GE) pelo link ge.asoec.com.br/public/index/login com seu usuário e senha recebidos pelo DP na admissão", imagem: ""},
+      {texto: "No menu lateral inferior esquerdo, clique em 'Token'. Confirme seus dados pessoais exibidos na tela e clique no botão verde 'Cadastrar Token'", imagem: ""},
+      {texto: "O sistema exibirá um QR Code. Baixe o app Google Authenticator na sua loja de aplicativos (App Store ou Google Play) e escolha 'Usar sem conta'", imagem: ""},
+      {texto: "No Google Authenticator, toque no sinal + no canto inferior direito, selecione 'Ler código QR' e aponte a câmera para o QR Code da tela. Autorize o acesso à câmera durante o uso do app", imagem: ""},
+      {texto: "O app gerará um código de 6 dígitos. Digite esse código no campo do sistema e clique em Salvar — a mensagem 'Autenticador Conectado' confirma o sucesso", imagem: ""},
+      {texto: "A partir de agora, sempre que acessar o Portal do Professor, informe seu usuário, senha e o código gerado pelo Google Authenticator. Deixe o app com fácil acesso no celular", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Portal do Professor", url: "https://professor.asoec.com.br/public/index/login", descricao: "Acesse aqui o Portal do Professor"},
+      {emoji: "🔗", titulo: "Gerenciador Empresarial (GE)", url: "https://ge.asoec.com.br/public/index/login", descricao: "Para criar e gerenciar seu token"},
+      {emoji: "📱", titulo: "Google Authenticator — Android", url: "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2", descricao: "Baixar na Google Play"},
+      {emoji: "📱", titulo: "Google Authenticator — iPhone", url: "https://apps.apple.com/br/app/google-authenticator/id388497605", descricao: "Baixar na App Store"},
+    ],
+    tags: ["token", "primeiro acesso", "Google Authenticator", "portal", "professor", "GE"]
+  },
+
+  {
+    numero: "P02", perfil: "professor", categoria: "Diário Online", prioridade: 2,
+    titulo: "Diário Online — Lançar Frequência e Conteúdo",
+    descricao: "Como registrar presença, conteúdo ministrado e aulas não ministradas no novo Espaço do Professor (sistema ASOEC). Baseado no Manual do Professor.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: true,
+    passos: [
+      {texto: "Acesse o Portal do Professor com seu usuário, senha e token do Google Authenticator. O sistema redirecionará automaticamente para o novo Espaço do Professor (ASOEC)", imagem: ""},
+      {texto: "No menu lateral, clique em 'Diário' → 'Conteúdo/Chamadas'. Selecione sua filial e a disciplina que deseja acessar", imagem: ""},
+      {texto: "O sistema exibe todas as aulas do semestre. Clique na aula desejada para expandi-la. Você verá o campo Conteúdo (edite se necessário) e os botões: 'Realizar Chamada', 'Aula não ministrada' e 'Salvar'", imagem: ""},
+      {texto: "Para lançar presença: clique em 'Realizar Chamada'. Aparece a lista de alunos — IMPORTANTE: marque apenas os alunos que FALTARAM (não os presentes). Clique no nome do aluno para expandir e selecione o horário da falta. Clique em 'Salvar os dados' ao final", imagem: ""},
+      {texto: "O diário possui prazo de carência de 7 dias após a data da aula. Após esse prazo, contate seu coordenador para liberação do sistema", imagem: ""},
+      {texto: "Se a aula não foi ministrada, clique em 'Aula não ministrada' — o sistema registrará a carga horária como faltante e você deverá cadastrar uma aula complementar em 'Aulas Complementares'", imagem: ""},
+      {texto: "Para imprimir o diário: acesse 'Diário' → 'Impressão', selecione a filial e o semestre. Lembre-se: os diários são online e não devem ser impressos", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Novo Espaço do Professor", url: "https://sistema.asoec.com.br", descricao: "Acesse aqui para lançar diário e notas"},
+    ],
+    tags: ["diário", "frequência", "chamada", "faltas", "conteúdo", "professor", "ASOEC"]
+  },
+
+  {
+    numero: "P03", perfil: "professor", categoria: "Notas", prioridade: 3,
+    titulo: "Lançamento de Notas",
+    descricao: "Como lançar notas das avaliações (V1, V2, VS, R1 etc.) e assinar o mapa de notas no novo Espaço do Professor. Baseado no Manual do Professor.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Acesse o novo Espaço do Professor (sistema.asoec.com.br) com seu usuário e senha", imagem: ""},
+      {texto: "No menu lateral, clique em 'Notas'. Selecione sua filial, a disciplina e o tipo de avaliação (V1, V2, VS, R1, etc.)", imagem: ""},
+      {texto: "A lista de alunos será exibida por páginas. Preencha a nota de cada aluno no campo correspondente. Ao terminar cada página, clique em 'Salvar' antes de avançar para a próxima — evita perda de dados", imagem: ""},
+      {texto: "Após lançar todas as notas, clique em 'Fechar notas'. Depois, clique em 'Assinar' para assinar digitalmente o mapa de notas", imagem: ""},
+      {texto: "Após fechar, as notas só podem ser alteradas mediante liberação pelo gestor do curso. Se precisar corrigir, contate seu coordenador informando: nome completo do aluno, matrícula, disciplina e a correção necessária", imagem: ""},
+      {texto: "Para corrigir lançamentos de frequência ou nota, encaminhe o Formulário de Retificação de Notas ao coordenador (modelo disponível com o coordenador do curso)", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Novo Espaço do Professor", url: "https://sistema.asoec.com.br", descricao: ""},
+    ],
+    tags: ["notas", "V1", "V2", "VS", "mapa de notas", "avaliação", "professor"]
+  },
+
+  {
+    numero: "P04", perfil: "professor", categoria: "Diário Online", prioridade: 4,
+    titulo: "Data de Provas — Como Selecionar",
+    descricao: "Como registrar no sistema a data em que cada avaliação será aplicada. Baseado no Manual do Professor.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Acesse o novo Espaço do Professor (sistema.asoec.com.br)", imagem: ""},
+      {texto: "No menu lateral, clique em 'Datas de Provas'", imagem: ""},
+      {texto: "Selecione sua filial e a disciplina desejada", imagem: ""},
+      {texto: "O sistema exibirá os tipos de prova (V1, V2, VS, R1, 2CHV1, 2CHV2) com as datas possíveis para cada um — selecione a data em que a prova será realizada marcando o botão correspondente", imagem: ""},
+      {texto: "Após selecionar todas as datas, clique em 'Salvar'. A mensagem de confirmação aparecerá na tela", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Novo Espaço do Professor", url: "https://sistema.asoec.com.br", descricao: ""},
+    ],
+    tags: ["data de prova", "V1", "V2", "VS", "calendário", "professor"]
+  },
+
+  {
+    numero: "P05", perfil: "professor", categoria: "AVA", prioridade: 5,
+    titulo: "Acesso ao AVA — Ambiente Virtual de Aprendizagem",
+    descricao: "Como acessar e utilizar o AVA para disponibilizar materiais, avaliações e comunicar-se com os alunos. Baseado no Manual do Professor.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Acesse o AVA pelo link ead.universo.edu.br no navegador Chrome ou Firefox (recomendados)", imagem: ""},
+      {texto: "Faça login com o mesmo usuário e senha do Portal do Professor (matrícula funcional)", imagem: ""},
+      {texto: "Na tela inicial (Painel), localize suas disciplinas em 'Resumo dos Cursos' — clique na disciplina desejada para acessá-la", imagem: ""},
+      {texto: "No AVA você deve disponibilizar: aulas gravadas (EAD), links para aulas ao vivo, materiais de apoio, orientações sobre provas, calendários e informativos em geral", imagem: ""},
+      {texto: "Para disciplinas presenciais e híbridas, o AVA complementa o conteúdo ministrado em sala — mantenha-o atualizado", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Acessar o AVA", url: "https://ead.universo.edu.br/", descricao: "Ambiente Virtual de Aprendizagem — UNIVERSO EAD"},
+    ],
+    tags: ["AVA", "EAD", "material", "disciplina", "online", "professor"]
+  },
+
+  {
+    numero: "P06", perfil: "professor", categoria: "AVA", prioridade: 6,
+    titulo: "Deletar Tentativas de Prova no AVA",
+    descricao: "O que fazer quando um aluno tem problema durante a prova no AVA e é necessário excluir a tentativa para que ele possa refazê-la. Baseado no Tutorial 001 oficial.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Acesse o AVA (ead.universo.edu.br) com seu usuário e senha (matrícula e senha em LETRAS MAIÚSCULAS)", imagem: ""},
+      {texto: "Na tela inicial, localize e clique na disciplina do aluno que teve problema durante a prova", imagem: ""},
+      {texto: "Dentro da disciplina, clique na avaliação em questão (ex.: V1). Você verá a tela com o número de tentativas e o status da prova", imagem: ""},
+      {texto: "Clique no link 'Tentativas: 1' para ver o relatório de tentativas. Na tela seguinte, clique em 'Mostrar relatório'", imagem: ""},
+      {texto: "Na lista de alunos, marque a caixa de seleção ao lado do nome do aluno que precisa refazer a prova. Role a página até o final e clique em 'Excluir tentativas selecionadas'", imagem: ""},
+      {texto: "ATENÇÃO: Se precisar prolongar o tempo da prova em vez de excluir a tentativa, acesse as configurações da avaliação (ícone de engrenagem → 'Editar configurações') e altere o horário de encerramento da prova na seção 'Duração'", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Acessar o AVA", url: "https://ead.universo.edu.br/", descricao: "Ambiente Virtual de Aprendizagem — UNIVERSO EAD"},
+    ],
+    tags: ["AVA", "deletar tentativa", "prova", "problema", "aluno", "professor"]
+  },
+
+  {
+    numero: "P07", perfil: "professor", categoria: "Secretaria", prioridade: 7,
+    titulo: "Deferir Protocolo de Estágio ou TCC",
+    descricao: "Como analisar e deferir (ou indeferir) o protocolo de entrega do Relatório Final de Estágio (RFE) ou TCC pelo Portal do Professor. Baseado no Tutorial 002 oficial.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "ENTENDA O FLUXO: O aluno faz o upload do Relatório Final de Estágio (RFE) com todos os anexos no Espaço do Aluno → Sistema de Estágio → gerando um novo protocolo. Cabe ao professor conferir e deferir ou indeferir esse protocolo", imagem: ""},
+      {texto: "Acesse o Portal do Professor em professor.asoec.com.br/public/index/login com seu usuário, senha e token", imagem: ""},
+      {texto: "No menu lateral de Navegação, clique em 'Secretaria On-line'. A tela 'Meus Protocolos' será exibida com a lista de protocolos pendentes", imagem: ""},
+      {texto: "Localize o protocolo do aluno (você pode pesquisar pelo número do protocolo no campo de busca). Clique no ícone de ação (lápis/editar) na coluna 'Ações' para abrir o protocolo", imagem: ""},
+      {texto: "Na janela que se abrir, baixe e confira o arquivo enviado pelo aluno clicando em 'Clique aqui para baixar o arquivo'. Verifique o RFE e seus anexos", imagem: ""},
+      {texto: "No campo 'Parecer', selecione 'Deferido (aceito)' ou 'Indeferido'. No campo 'Observação', registre o motivo ou a confirmação do deferimento. Clique em 'Salvar'", imagem: ""},
+      {texto: "Uma janela de confirmação perguntará 'Confirmar o deferimento desse protocolo?'. Clique em 'Sim' para concluir. O aluno será notificado e a nota poderá ser lançada pelo professor", imagem: ""},
+    ],
+    links: [
+      {emoji: "🔗", titulo: "Portal do Professor", url: "https://professor.asoec.com.br/public/index/login", descricao: "Acesse Secretaria On-line → Meus Protocolos"},
+    ],
+    tags: ["estágio", "TCC", "protocolo", "deferir", "indeferir", "RFE", "secretaria", "professor"]
+  },
+
+  {
+    numero: "P08", perfil: "professor", categoria: "Extensão", prioridade: 8,
+    titulo: "Eventos de Extensão — Como Encontrar e Divulgar",
+    descricao: "Como acessar os cursos e eventos de extensão da UNIVERSO pelo site institucional. Baseado no Tutorial 15 oficial.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "A extensão universitária integra alunos, professores e comunidade por meio de programas, projetos, eventos e cursos. Sua missão é realizar o intercâmbio de conhecimento e consolidar a integração UNIVERSO–Sociedade", imagem: ""},
+      {texto: "Acesse o site da UNIVERSO em universo.edu.br", imagem: ""},
+      {texto: "Na página inicial, localize o botão 'Extensão/Eventos' (ao lado de Graduação e Pós-Graduação) e clique nele", imagem: ""},
+      {texto: "Use os filtros para selecionar: Unidade (ex.: Goiânia), Curso/Evento e Categoria (Público em Geral ou Professor)", imagem: ""},
+      {texto: "Clique em 'Vamos lá!' para ver os resultados. Cada evento ou curso exibirá detalhes e um formulário de inscrição com nome, CPF, data de nascimento, celular e e-mail", imagem: ""},
+      {texto: "Para divulgar eventos aos seus alunos: compartilhe o link do evento pelo App Meu UNIVERSO (canal oficial de comunicação com alunos) ou pelo AVA da disciplina", imagem: ""},
+      {texto: "Após participar de um evento, os certificados ficam disponíveis no Espaço do Aluno → Certificados", imagem: ""},
+    ],
+    links: [
+      {emoji: "🌐", titulo: "Extensão e Eventos — UNIVERSO", url: "https://universo.edu.br/", descricao: "Acesse o site e clique em Extensão/Eventos"},
+    ],
+    tags: ["extensão", "eventos", "cursos", "certificado", "comunidade", "professor"]
+  },
+
+  {
+    numero: "P09", perfil: "professor", categoria: "Primeiros Passos", prioridade: 9,
+    titulo: "App Meu UNIVERSO — Comunicação com Alunos",
+    descricao: "O App Meu UNIVERSO é o canal oficial de comunicação com os alunos. Saiba como usar o COMUNIQUE-SE. Baseado no Manual do Professor.",
+    tipo: "Texto",
+    url: "", imagem: "", destaque: false,
+    passos: [
+      {texto: "Baixe o App Meu UNIVERSO na App Store (iPhone) ou Google Play (Android)", imagem: ""},
+      {texto: "Faça login com o mesmo usuário e senha recebidos do DP na sua admissão", imagem: ""},
+      {texto: "Acesse a funcionalidade 'COMUNIQUE-SE' — este é o espaço oficial para enviar mensagens aos alunos das suas turmas", imagem: ""},
+      {texto: "Use o app para informar mudanças de sala, atividades, avisos importantes e qualquer comunicação oficial com os alunos", imagem: ""},
+      {texto: "Não utilize grupos de WhatsApp pessoais para comunicações oficiais — o App Meu UNIVERSO é o canal correto e registrado", imagem: ""},
+    ],
+    links: [
+      {emoji: "📱", titulo: "App Meu UNIVERSO — Android", url: "https://play.google.com/store/apps/", descricao: "Baixar na Google Play"},
+      {emoji: "📱", titulo: "App Meu UNIVERSO — iPhone", url: "https://apps.apple.com/br/", descricao: "Baixar na App Store"},
+    ],
+    tags: ["app", "Meu UNIVERSO", "comunicação", "alunos", "COMUNIQUE-SE", "professor"]
+  },
+
 ];
 
 async function popular() {
@@ -410,7 +590,6 @@ async function popular() {
   btn.textContent = "⏳ Criando tutoriais...";
   log.innerHTML = '<div class="info">Iniciando... apagando dados anteriores e recriando.</div>';
 
-  // Primeiro apagar coleção existente
   try {
     const snap = await db.collection("tutoriais").get();
     const batch = db.batch();
